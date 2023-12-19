@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
-project(CATS)
+project(libCATS)
 
 file(GLOB SOURCES "src/*.c")
 
