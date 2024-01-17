@@ -1,8 +1,6 @@
 #include "cats/interleaver.h"
 #include <string.h>
 
-#define is_bigendian() ( (&i) == 0 )
-
 void cats_interleave(uint8_t* data, int len)
 {
 	uint8_t buf[len];
@@ -13,10 +11,10 @@ void cats_interleave(uint8_t* data, int len)
 			if(i+j >= len*8)
 				continue;
 			
-			if((data[(i+j)/8] & (1 << (is_bigendian() ? ((i+j)%8) : (7-(i+j)%8)))) != 0)
-				buf[bitIndex/8] |= 1 << (is_bigendian() ? ((bitIndex)%8) : (7-(bitIndex)%8));
+			if((data[(i+j)/8] & (1 << 7-(i+j)%8)) != 0)
+				buf[bitIndex/8] |= 1 << 7-bitIndex%8;
 			else
-				buf[bitIndex/8] &= ~(1 << (is_bigendian() ? ((bitIndex)%8) : (7-(bitIndex)%8)));
+				buf[bitIndex/8] &= ~(1 << 7-bitIndex%8);
 
 			bitIndex++;	
 		}	
@@ -28,17 +26,17 @@ void cats_interleave(uint8_t* data, int len)
 void cats_deinterleave(uint8_t* data, int len)
 {
 	uint8_t buf[len];
-
+	
 	int bitIndex = 0;
 	for(int i = 0; i < 32; i++) {
 		for(int j = 0; j < len*8; j+= 32) {
 			if(i+j >= len*8)
 				continue;
 
-			if((data[bitIndex/8] & (1 << (is_bigendian() ? ((bitIndex)%8) : (7-(bitIndex)%8)))) != 0)
-				buf[(i+j)/8] |= 1 << (is_bigendian() ? ((i+j)%8) : (7-(i+j)%8));
+			if((data[bitIndex/8] & (1 << 7-bitIndex%8)) != 0)
+				buf[(i+j)/8] |= 1 << 7-(i+j)%8;
 			else
-				buf[(i+j)/8] &= ~(1 << (is_bigendian() ? ((i+j)%8) : (7-(i+j)%8)));
+				buf[(i+j)/8] &= ~(1 << 7-(i+j)%8);
 
 			bitIndex++;	
 		}

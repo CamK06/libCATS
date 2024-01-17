@@ -28,6 +28,6 @@ int main()
 		printf("PASS\n");
 	else
 		printf("FAIL\n");
-		
+
 	return 0;
 }
