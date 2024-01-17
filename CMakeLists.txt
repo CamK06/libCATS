@@ -8,6 +8,15 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     endif()
 endif()
 
-file(GLOB SOURCES "src/*.c")
+file(GLOB SOURCES lib/buffer.c
+                lib/error.c
+                lib/identity.c
+                lib/interleaver.c
+                lib/ldpc.c
+                lib/packet.c
+                lib/utf8.c
+                lib/whisker.c
+                lib/whitener.c
+)
 add_library(CATS STATIC ${SOURCES})
 target_include_directories(CATS PUBLIC include)
