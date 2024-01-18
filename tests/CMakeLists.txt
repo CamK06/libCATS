@@ -18,10 +18,6 @@ add_executable(whisker whisker.c)
 target_include_directories(whisker PUBLIC include)
 target_link_libraries(whisker PUBLIC CATS)
 
-add_executable(identity identity.c)
-target_include_directories(identity PUBLIC include)
-target_link_libraries(identity PUBLIC CATS)
-
 add_executable(whitener whitener.c)
 target_include_directories(whitener PUBLIC include)
 target_link_libraries(whitener PUBLIC CATS)
@@ -46,10 +42,6 @@ set_property(TEST Packet PROPERTY WILL_FAIL Packet)
 add_test(NAME Whisker
          COMMAND whisker)
 set_property(TEST Whisker PROPERTY WILL_FAIL Whisker)
-
-add_test(NAME Identity
-         COMMAND identity)
-set_property(TEST Identity PROPERTY WILL_FAIL Identity)
 
 add_test(NAME Whitener
          COMMAND whitener)

@@ -10,7 +10,6 @@ endif()
 
 file(GLOB SOURCES lib/buffer.c
                 lib/error.c
-                lib/identity.c
                 lib/interleaver.c
                 lib/ldpc.c
                 lib/packet.c

@@ -27,3 +27,15 @@ int cats_packet_decode(const uint8_t* data, int len, cats_whisker_t* whiskersOut
 	uint8_t buf[pktLen];
 	
 }
+
+// https://stackoverflow.com/a/75139158
+uint16_t cats_crc16(uint8_t* data, int len)
+{
+	uint16_t crc = 0xFFFF;
+	for(int i = 0; i < len; i++) {
+		crc ^= data[i];
+		for(uint8_t j = 0; j < 8; j++)
+			crc = (crc & 1) != 0 ? (crc >> 1) ^ 0x8408 : crc >> 1;
+	}
+	return ~crc;
+}
