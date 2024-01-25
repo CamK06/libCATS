@@ -6,9 +6,10 @@ the output with known-good data from the original Rust implementation
 of CATS.
 */
 
+#include "cats/interleaver.h"
+
 #include <string.h>
 #include <assert.h>
-#include "cats/interleaver.h"
 
 int main()
 {

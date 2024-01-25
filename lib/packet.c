@@ -1,4 +1,5 @@
 #include "cats/packet.h"
+
 #include <string.h>
 
 int cats_packet_encode(cats_whisker_t* whiskers, int whiskerCount, uint8_t* dataOut)
