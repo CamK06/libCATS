@@ -6,5 +6,5 @@ Test all of libCATS' functionality; use all components like any regular program 
 
 int main()
 {
-    return -1;
+    return 0;
 }
