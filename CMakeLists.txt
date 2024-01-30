@@ -20,3 +20,4 @@ file(GLOB SOURCES lib/buffer.c
 add_library(CATS STATIC ${SOURCES})
 target_link_libraries(CATS ${CMAKE_SOURCE_DIR}/liblabrador_ldpc/liblabrador_ldpc.a) # Todo make this less stupid
 target_include_directories(CATS PUBLIC include liblabrador_ldpc/include)
+set_property(TARGET CATS PROPERTY C_STANDARD 11)
