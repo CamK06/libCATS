@@ -1,1 +1,0 @@
-/usr/bin/cc -g CMakeFiles/ldpc.dir/ldpc.c.o -o ldpc  ../libCATS.a /home/cam/Dev/C++/CATS/liblabrador_ldpc/liblabrador_ldpc.a 

@@ -1,1 +1,0 @@
-/usr/bin/cc -g CMakeFiles/interleaver.dir/interleaver.c.o -o interleaver  ../libCATS.a /home/cam/Dev/C++/CATS/liblabrador_ldpc/liblabrador_ldpc.a 
