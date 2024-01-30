@@ -25,6 +25,7 @@ free(pkt); // Packet builder no longer needed
 ```
 
 Decoding a packet:
+
 Note: this API will be changed significantly
 ```c
 uint8_t* buf = ... // Buffer with the received packet
