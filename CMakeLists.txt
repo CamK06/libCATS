@@ -11,6 +11,7 @@ endif()
 file(GLOB SOURCES lib/buffer.c
                 lib/error.c
                 lib/interleaver.c
+                lib/ldpc_matrices.c
                 lib/ldpc.c
                 lib/packet.c
                 lib/utf8.c
