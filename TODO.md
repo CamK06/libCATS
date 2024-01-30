@@ -11,7 +11,7 @@
 ## CATS Standard
 
 #### Not Implemented
-* LDPC* (need to roll own implementation)
+* LDPC decoding (need to roll own implementation)
 * The following whisker types:
     Timestamp, GPS, Route, Destination, Arbitrary, Simplex, Repeater
 
