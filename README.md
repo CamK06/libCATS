@@ -5,7 +5,7 @@
 
 ## About
 
-libCATS is an implementation of the [CATS](https://cats.radio/) standard in C, intended for embedded use in [firmware for CATS radios](https://github.com/CamK06/CATS-Firmware), as well as desktop CATS software. It provides a simple API for encoding and decoding CATS packets.
+libCATS is an implementation of the [CATS](https://cats.radio/) standard in C, intended for embedded use in [firmware for CATS radios](https://github.com/CamK06/CATS-Firmware), as well as desktop CATS software. It provides a simple API for encoding and decoding CATS packets and their component whiskers. Software using libCATS does not have to be concerned with any 'low level' parts of the CATS standard, however those functions are still exposed in the API to allow for flexibility in software where it may be useful to not have everything abstracted.
 
 libCATS aims to be 100% compliant with the CATS standard, and should work with existing CATS radios using the official [Rust implementation](https://gitlab.scd31.com/cats/ham-cats) of CATS.
 
