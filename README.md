@@ -21,4 +21,14 @@ cats_packet_prepare(&pkt); // Initialize pkt
 cats_packet_add_identification(pkt, "VE3KCN", 7, 1); // Add an ID with callsign VE3KCN-7 and a logo of 1
 cats_packet_add_comment(pkt, "Hello libCATS world!"); // Self explanatory; Add a comment whisker
 int len = cats_packet_build(pkt, &buf); // Allocates buf automatically
+free(pkt); // Packet builder no longer needed
+```
+
+Decoding a packet:
+Note: this API will be changed significantly
+```c
+uint8_t* buf = ... // Buffer with the received packet
+cats_whisker_t* whiskers;
+cats_packet_decode(buf, bufSize, &whiskers);
+free(buf);
 ```
