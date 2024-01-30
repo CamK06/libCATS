@@ -21,6 +21,20 @@ typedef struct cats_whisker {
 	uint8_t* data;
 } cats_whisker_t;
 
+/*
+Encode a whisker from cats_whisker_t
+
+dataOut must already be allocated
+*/
+void cats_whisker_encode(cats_whisker_t* whisker, uint8_t* dataOut);
+
+/*
+Decodes a whisker from its raw bytes to its appropriate type
+
+whisker must not already be allocated
+*/
+void cats_whisker_decode(cats_whisker_t* whiskerOut, uint8_t* data);
+
 typedef struct cats_ident_whisker {
 	uint16_t icon;
 	uint8_t* callsign;
@@ -31,14 +45,14 @@ typedef struct cats_gps_whisker {
 	int32_t latitude;
 	int32_t longitude;
 	float altitude;
-	uint8_t max_error;
+	uint8_t maxError;
 	uint8_t heading;
 	float speed;
 } cats_gps_whisker_t;
 
 typedef struct cats_route_whisker {
-	uint8_t max_digipeats;
-	uint8_t* route_data;
+	uint8_t maxDigipeats;
+	uint8_t* routeData;
 } cats_route_whisker_t;
 
 typedef struct cats_destination_whisker {

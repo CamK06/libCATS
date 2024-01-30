@@ -1,5 +1,5 @@
 // Common helper functions for tests; only really used for dev purposes
-/*
+
 #ifndef CATS_TEST_UTIL_H
 #define CATS_TEST_UTIL_H
 
@@ -18,4 +18,3 @@ void hexdump(uint8_t* data, int len) {
 }
 
 #endif
-*/
