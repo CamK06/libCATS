@@ -1,0 +1,1 @@
+/usr/bin/cc -g CMakeFiles/packet.dir/packet.c.o -o packet  ../libCATS.a /home/cam/Dev/C++/CATS/liblabrador_ldpc/liblabrador_ldpc.a 

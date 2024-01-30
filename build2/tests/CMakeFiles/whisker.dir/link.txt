@@ -1,0 +1,1 @@
+/usr/bin/cc -g CMakeFiles/whisker.dir/whisker.c.o -o whisker  ../libCATS.a /home/cam/Dev/C++/CATS/liblabrador_ldpc/liblabrador_ldpc.a 

@@ -1,0 +1,93 @@
+Start testing: Jan 29 20:16 EST
+----------------------------------------------------------
+1/6 Testing: Interleaver
+1/6 Test: Interleaver
+Command: "/home/cam/Dev/C++/CATS/build/tests/interleaver"
+Directory: /home/cam/Dev/C++/CATS/build/tests
+"Interleaver" start time: Jan 29 20:16 EST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"Interleaver" end time: Jan 29 20:16 EST
+"Interleaver" time elapsed: 00:00:00
+----------------------------------------------------------
+
+2/6 Testing: LDPC
+2/6 Test: LDPC
+Command: "/home/cam/Dev/C++/CATS/build/tests/ldpc"
+Directory: /home/cam/Dev/C++/CATS/build/tests
+"LDPC" start time: Jan 29 20:16 EST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"LDPC" end time: Jan 29 20:16 EST
+"LDPC" time elapsed: 00:00:00
+----------------------------------------------------------
+
+3/6 Testing: Packet
+3/6 Test: Packet
+Command: "/home/cam/Dev/C++/CATS/build/tests/packet"
+Directory: /home/cam/Dev/C++/CATS/build/tests
+"Packet" start time: Jan 29 20:16 EST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"Packet" end time: Jan 29 20:16 EST
+"Packet" time elapsed: 00:00:00
+----------------------------------------------------------
+
+4/6 Testing: Whisker
+4/6 Test: Whisker
+Command: "/home/cam/Dev/C++/CATS/build/tests/whisker"
+Directory: /home/cam/Dev/C++/CATS/build/tests
+"Whisker" start time: Jan 29 20:16 EST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Failed.
+"Whisker" end time: Jan 29 20:16 EST
+"Whisker" time elapsed: 00:00:00
+----------------------------------------------------------
+
+5/6 Testing: Whitener
+5/6 Test: Whitener
+Command: "/home/cam/Dev/C++/CATS/build/tests/whitener"
+Directory: /home/cam/Dev/C++/CATS/build/tests
+"Whitener" start time: Jan 29 20:16 EST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"Whitener" end time: Jan 29 20:16 EST
+"Whitener" time elapsed: 00:00:00
+----------------------------------------------------------
+
+6/6 Testing: CATS
+6/6 Test: CATS
+Command: "/home/cam/Dev/C++/CATS/build/tests/cats"
+Directory: /home/cam/Dev/C++/CATS/build/tests
+"CATS" start time: Jan 29 20:16 EST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Failed.
+"CATS" end time: Jan 29 20:16 EST
+"CATS" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Jan 29 20:16 EST

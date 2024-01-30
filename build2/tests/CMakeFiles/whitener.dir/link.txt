@@ -1,0 +1,1 @@
+/usr/bin/cc -g CMakeFiles/whitener.dir/whitener.c.o -o whitener  ../libCATS.a /home/cam/Dev/C++/CATS/liblabrador_ldpc/liblabrador_ldpc.a 

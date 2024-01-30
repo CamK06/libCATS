@@ -1,0 +1,2 @@
+/usr/bin/ar qc libCATS.a CMakeFiles/CATS.dir/lib/error.c.o CMakeFiles/CATS.dir/lib/interleaver.c.o CMakeFiles/CATS.dir/lib/ldpc.c.o CMakeFiles/CATS.dir/lib/packet.c.o CMakeFiles/CATS.dir/lib/utf8.c.o CMakeFiles/CATS.dir/lib/whisker.c.o CMakeFiles/CATS.dir/lib/whitener.c.o
+/usr/bin/ranlib libCATS.a

@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/identity.dir/identity.c.o -o identity  ../libCATS.a 
