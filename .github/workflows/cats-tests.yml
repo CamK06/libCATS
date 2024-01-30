@@ -1,4 +1,4 @@
-name: CATS
+name: CATS Tests
 
 on:
     push:
