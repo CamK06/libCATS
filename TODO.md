@@ -8,17 +8,4 @@
 
 ## CATS Standard
 
-#### Not Implemented
 * LDPC decoding (need to roll own implementation)
-* The following whisker types:
-    Route, Destination, Arbitrary, Simplex, Repeater
-
-
-#### Implemented
-* CRC
-* Whitener
-* Interleaver
-* Packet headers
-* Whiskers* (not all types, but the boilerplate for whiskers is there)
-* Identification whisker
-* Comment whisker

@@ -62,7 +62,7 @@ typedef struct cats_destination_whisker {
 } cats_destination_whisker_t;
 
 typedef struct cats_simplex_whisker {
-	uint16_t frequency;
+	uint32_t frequency;
 	uint8_t modulation;
 	uint8_t power;
 } cats_simplex_whisker_t;
