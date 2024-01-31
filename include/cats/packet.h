@@ -17,10 +17,8 @@ Initialize a cats_packet_t pointer
 
 Must be called before any functions using cats_packet_t
 pkt MUST NOT already be allocated, otherwise it will leak memory
-
-pkt != NULL on success
 */
-void cats_packet_prepare(cats_packet_t** pkt);
+int cats_packet_prepare(cats_packet_t** pkt);
 
 
 /*
@@ -29,7 +27,7 @@ Build a cats_packet_t into a CATS packet for TX
 Output buffer must be at least pkt->len bytes long
 If output buffer is NULL, then it will be allocated according to the packet length
 
-Returns the length of output on success; Returns -1 on failure
+Returns the length of output on success; Returns CATS_FAIL on failure
 */
 uint16_t cats_packet_build(cats_packet_t* pkt, uint8_t** out);
 

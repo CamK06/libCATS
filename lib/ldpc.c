@@ -1,4 +1,5 @@
 #include "cats/ldpc.h"
+#include "cats/error.h"
 
 #include <labrador_ldpc.h>
 #include <string.h>
@@ -107,7 +108,8 @@ uint16_t cats_ldpc_encode(uint8_t** data, uint16_t len)
     int newLen = (len*2) + 2 + (i-len); // (Data+Parity) + (Length) + (Padded parity)
     
     uint8_t* tmp = realloc(*data, newLen);
-    assert(tmp != NULL); // TODO: Handle realloc failure
+    if(tmp == NULL)
+        throw(MALLOC_FAIL);
     *data = tmp; 
 
     memcpy(*data, out, newLen);
@@ -117,13 +119,13 @@ uint16_t cats_ldpc_encode(uint8_t** data, uint16_t len)
 
 uint16_t cats_ldpc_decode(uint8_t** buf, uint16_t bufLen)
 {
-    if(bufLen < 2) // TODO: Throw a proper error here
-        return -1;
+    if(bufLen < 2)
+        throw(LDPC_DECODE_FAIL);
 
     uint16_t len;
     memcpy(&len, (*buf)+bufLen-2, sizeof(uint16_t));
-    if(len >= bufLen) // Error
-        return -1;
+    if(len >= bufLen)
+        throw(LDPC_DECODE_FAIL);
 
     uint8_t out[len];
 
@@ -145,7 +147,8 @@ uint16_t cats_ldpc_decode(uint8_t** buf, uint16_t bufLen)
     }
 
     uint8_t* tmp = realloc(*buf, len);
-    assert(tmp != NULL); // TODO: Handle realloc failure
+    if(tmp == NULL)
+        throw(MALLOC_FAIL);
     *buf = tmp;
 
     memset(*buf, 0x00, len);

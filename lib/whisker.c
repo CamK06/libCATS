@@ -1,15 +1,16 @@
 #include "cats/whisker.h"
+#include "cats/error.h"
 
 #include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
 
-void cats_whisker_encode(cats_whisker_t* whisker, uint8_t* dataOut)
+int cats_whisker_encode(cats_whisker_t* whisker, uint8_t* dataOut)
 {
     int len = whisker->len+2;
     uint8_t* out = malloc(len);
     if(out == NULL)
-        return;
+        throw(MALLOC_FAIL);
 
     out[0] = whisker->type;
     out[1] = whisker->len;
@@ -29,20 +30,19 @@ void cats_whisker_encode(cats_whisker_t* whisker, uint8_t* dataOut)
         // Unsupported type
         default:
         free(out);
-        dataOut = NULL;
-        return;
-        break;
+        throw(UNSUPPORTED_WHISKER);
     }
 
     memcpy(dataOut, out, len);
     free(out);
+    return CATS_SUCCESS;
 }
 
-void cats_whisker_decode(cats_whisker_t* whiskerOut, uint8_t* data)
+int cats_whisker_decode(cats_whisker_t* whiskerOut, uint8_t* data)
 {
     cats_whisker_t* out = malloc(sizeof(cats_whisker_t));
     if(out == NULL)
-        return;
+        throw(MALLOC_FAIL);
     out->type = data[0];
 	out->len = data[1];
     
@@ -64,14 +64,16 @@ void cats_whisker_decode(cats_whisker_t* whiskerOut, uint8_t* data)
         // Unsupported type
         default:
         free(out);
-        whiskerOut = NULL;
-        return;
-        break;
+        throw(UNSUPPORTED_WHISKER);
     }
 
     
+    // TODO: ??? remove this? out-> data should've been allocated above.
 	out->data = malloc(data[1]);
+    if(out->data == NULL)
+        throw(MALLOC_FAIL);
 	memcpy(out->data, &data[2], data[1]);
     memcpy(whiskerOut, out, sizeof(cats_whisker_t));
     free(out);
+    return CATS_SUCCESS;
 }

@@ -26,14 +26,14 @@ Encode a whisker from cats_whisker_t
 
 dataOut must already be allocated
 */
-void cats_whisker_encode(cats_whisker_t* whisker, uint8_t* dataOut);
+int cats_whisker_encode(cats_whisker_t* whisker, uint8_t* dataOut);
 
 /*
 Decodes a whisker from its raw bytes to its appropriate type
 
 whisker must not already be allocated
 */
-void cats_whisker_decode(cats_whisker_t* whiskerOut, uint8_t* data);
+int cats_whisker_decode(cats_whisker_t* whiskerOut, uint8_t* data);
 
 typedef struct cats_ident_whisker {
 	uint16_t icon;

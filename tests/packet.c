@@ -3,6 +3,7 @@ libCATS Packet Test
 */
 
 #include "cats/packet.h"
+#include "cats/error.h"
 #include "util.h"
 
 #include <assert.h>
@@ -51,7 +52,7 @@ void test_encode_decode()
     // Decode the test packet
     cats_packet_prepare(&pkt);
     int r = cats_packet_from_buf(pkt, buf, len);
-    assert(r == 0);
+    assert(r == CATS_SUCCESS);
 
     free(pkt);
     free(buf);

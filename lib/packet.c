@@ -2,28 +2,30 @@
 #include "cats/whitener.h"
 #include "cats/packet.h"
 #include "cats/ldpc.h"
+#include "cats/error.h"
 
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <endian.h>
 
-void cats_packet_prepare(cats_packet_t** pkt)
+int cats_packet_prepare(cats_packet_t** pkt)
 {
 	*pkt = malloc(sizeof(cats_packet_t));
 	if((*pkt) == NULL)
-		return;
+		throw(MALLOC_FAIL);
 	
 	(*pkt)->len = 0;
 	(*pkt)->numWhiskers = 0;
 	(*pkt)->whiskers = NULL;	
+	return CATS_SUCCESS;
 }
 
 uint16_t cats_packet_build(cats_packet_t* pkt, uint8_t** out)
 {
 	if(*out == NULL)
 		if((*out = malloc(pkt->len)) == NULL)
-			return -1;
+			throw(MALLOC_FAIL);
 	
 	// TODO: Validate the packet before encoding (e.g. ensure only one ID whisker exists, packet isn't too long, etc)
 	return cats_packet_encode(pkt->whiskers, pkt->numWhiskers, out);
@@ -33,23 +35,21 @@ int cats_packet_from_buf(cats_packet_t* pkt, uint8_t* buf, uint16_t bufLen)
 {
 	// Maybe this is where we should remove the length in the first two bytes?
 	pkt->numWhiskers = cats_packet_decode(buf, bufLen, &pkt->whiskers);
-	if(pkt->numWhiskers <= 0) // TODO: Handle no whiskers/decode fail error
-		return -1;
-	return 0;
+	if(pkt->numWhiskers <= 0)
+		throw(DECODE_FAIL);
+	return CATS_SUCCESS;
 }
 
 int cats_packet_add_identification(cats_packet_t* pkt, char* callsign, uint8_t ssid, uint16_t icon)
 {
-	if(callsign == NULL || strlen(callsign) <= 0)
-		return -1; // No callsign error
-	if(strlen(callsign) > 252)
-		return -1; // Callsign too long
+	if(callsign == NULL || strlen(callsign) <= 0 || strlen(callsign) > 252)
+		throw(INVALID_OR_NO_CALLSIGN);
 	if(pkt->len+5+strlen(callsign) > CATS_MAX_PKT_LEN)
-		return -1; // Packet would be too long; TODO: Throw error
+		throw(PACKET_TOO_BIG);
 
 	cats_ident_whisker_t* data = malloc(sizeof(cats_ident_whisker_t));
 	if(data == NULL)
-		return -1;
+		throw(MALLOC_FAIL);
 	data->ssid = ssid;
 	data->icon = icon;
 	data->callsign = malloc(strlen(callsign));
@@ -57,7 +57,7 @@ int cats_packet_add_identification(cats_packet_t* pkt, char* callsign, uint8_t s
 	
 	cats_whisker_t* whisker = malloc(sizeof(cats_whisker_t));
 	if(whisker == NULL)
-		return -1;
+		throw(MALLOC_FAIL);
 	whisker->type = WHISKER_TYPE_IDENTIFICATION;
 	whisker->len = 3+strlen(callsign);
 	whisker->data = (uint8_t*)data;
@@ -68,18 +68,20 @@ int cats_packet_add_identification(cats_packet_t* pkt, char* callsign, uint8_t s
 int cats_packet_add_comment(cats_packet_t* pkt, char* comment)
 {
 	if(comment == NULL || strlen(comment) <= 0)
-		return -1;
+		throw(INVALID_OR_NO_COMMENT);
 	if(strlen(comment) > 255)
 		return -1; // TODO: Handle longer comments
 	if(pkt->len+2+strlen(comment) > CATS_MAX_PKT_LEN)
-		return -1; // Packet would be too long
+		throw(PACKET_TOO_BIG);
 
 	uint8_t* text = malloc(strlen(comment));
+	if(text == NULL)
+		throw(MALLOC_FAIL);
 	strcpy(text, comment);
 
 	cats_whisker_t* whisker = malloc(sizeof(cats_whisker_t));
 	if(whisker == NULL)
-		return -1;
+		throw(MALLOC_FAIL);
 	whisker->type = WHISKER_TYPE_COMMENT;
 	whisker->len = strlen(comment);
 	whisker->data = text;
@@ -94,17 +96,17 @@ int cats_packet_add_whisker(cats_packet_t* pkt, cats_whisker_t** whisker)
 	if(pkt->whiskers == NULL) {
 		pkt->whiskers = malloc(sizeof(cats_whisker_t));
 		if(pkt->whiskers == NULL)
-			return -1;
+			throw(MALLOC_FAIL);
 	}
 	else {
 		cats_whisker_t* tmp = realloc(pkt->whiskers, pkt->numWhiskers * sizeof *tmp);
 		if(tmp == NULL)
-			return -1;
+			throw(MALLOC_FAIL);
 		pkt->whiskers = tmp;
 	}
 	memcpy((void*)pkt->whiskers+(sizeof(cats_whisker_t)*(pkt->numWhiskers-1)), *whisker, sizeof(cats_whisker_t));
 	free(*whisker);
-	return 0;
+	return CATS_SUCCESS;
 }
 
 int cats_packet_get_identification(cats_packet_t* pkt, char* callsign, uint8_t* ssid, uint16_t* icon)
@@ -124,7 +126,7 @@ int cats_packet_encode(cats_whisker_t* whiskers, int whiskerCount, uint8_t** dat
 		len += whiskers[i].len+2;
 	uint8_t* out = malloc(len+2);
 	if(out == NULL)
-		return -1;
+		throw(MALLOC_FAIL);
 
 	int written = 0;
 	for(int i = 0; i < whiskerCount; i++) {
@@ -145,7 +147,7 @@ int cats_packet_encode(cats_whisker_t* whiskers, int whiskerCount, uint8_t** dat
 	
 	uint8_t* tmp = realloc(*dataOut, len);
 	if(tmp == NULL)
-		return -1;
+		throw(MALLOC_FAIL);
 	*dataOut = tmp;
 	memcpy(*dataOut, out, len);
 	free(out);
@@ -161,13 +163,13 @@ int cats_packet_decode(uint8_t* data, int len, cats_whisker_t** whiskersOut)
 	cats_deinterleave(pkt, pktLen);
 	pktLen = cats_ldpc_decode(&pkt, pktLen);
 	if(pktLen < 0)
-		return -1;
+		throw(LDPC_DECODE_FAIL);
 	cats_whiten(pkt, pktLen);
 
 	uint16_t crcActual = cats_crc16(pkt, pktLen-2);
 	uint16_t crcExpect = *(uint16_t*)&pkt[pktLen-2]; // Is this okay practice? Probably should use memcpy...
 	if(crcActual != crcExpect)
-		return -1; // TODO: Error handling
+		throw(INVALID_CRC);
 
 	int numWhiskers = 0;
 	for(int i = 0; i < pktLen-2; i+=2) {
