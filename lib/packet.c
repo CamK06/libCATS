@@ -139,11 +139,10 @@ int cats_packet_get_identification(cats_packet_t* pkt, char* callsign, uint8_t* 
 	cats_whisker_t* whisker = *r;
 	free(r);
 	
-	cats_ident_whisker_t data;
-	memcpy(&data, whisker->data, sizeof(cats_ident_whisker_t));
-	strcpy(callsign, data.callsign);
-	memcpy(ssid, &data.ssid, sizeof(uint8_t));
-	memcpy(icon, &data.icon, sizeof(uint16_t));
+	cats_ident_whisker_t* data = (cats_ident_whisker_t*)whisker->data;
+	strcpy(callsign, data->callsign);
+	memcpy(ssid, &data->ssid, sizeof(uint8_t));
+	memcpy(icon, &data->icon, sizeof(uint16_t));
 	return CATS_SUCCESS;
 }
 

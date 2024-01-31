@@ -29,6 +29,7 @@ Decoding a packet and reading the identification and comment fields:
 uint8_t* buf = ... // Buffer with the received packet
 cats_packet_t* pkt;
 
+cats_packet_prepare(&pkt);
 if(!cats_packet_from_buf(pkt, buf, bufLen)) {
     fprintf(stderr, cats_error_str);
     return -1; // Decode failed
@@ -42,6 +43,7 @@ cats_packet_get_identification(pkt, callsign, &ssid, &icon);
 cats_packet_get_comment(pkt, comment);
 
 free(buf);
+free(pkt);
 ```
 
 ## Contributing

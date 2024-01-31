@@ -16,15 +16,27 @@ int cats_whisker_encode(cats_whisker_t* whisker, uint8_t* dataOut)
     out[1] = whisker->len;
     switch(whisker->type) {
         case WHISKER_TYPE_IDENTIFICATION:
-        cats_ident_whisker_t ident;
-        memcpy(&ident, (void*)whisker->data, sizeof(cats_ident_whisker_t));
-        memcpy(&out[2], &ident.icon, sizeof(uint16_t));
-        memcpy(&out[4], ident.callsign, whisker->len-3);
-        out[whisker->len+1] = ident.ssid;
+            cats_ident_whisker_t ident;
+            memcpy(&ident, (void*)whisker->data, sizeof(cats_ident_whisker_t));
+            memcpy(&out[2], &ident.icon, sizeof(uint16_t));
+            memcpy(&out[4], ident.callsign, whisker->len-3);
+            out[whisker->len+1] = ident.ssid;
         break;
         
         case WHISKER_TYPE_COMMENT:
-        memcpy(out+2, whisker->data, whisker->len);
+        case WHISKER_TYPE_TIMESTAMP:
+            memcpy(out+2, whisker->data, whisker->len);
+        break;
+
+        case WHISKER_TYPE_GPS:
+            cats_gps_whisker_t gps;
+            memcpy(&gps, (void*)whisker->data, sizeof(cats_gps_whisker_t));
+            memcpy(&out[2], &gps.latitude, sizeof(int32_t));
+            memcpy(&out[6], &gps.longitude, sizeof(int32_t));
+            memcpy(&out[10], &gps.altitude, sizeof(uint16_t));
+            memcpy(&out[12], &gps.maxError, sizeof(uint8_t));
+            memcpy(&out[13], &gps.heading, sizeof(uint8_t));
+            memcpy(&out[14], &gps.speed, sizeof(uint16_t));
         break;
 
         // Unsupported type
@@ -67,10 +79,27 @@ int cats_whisker_decode(cats_whisker_t* whiskerOut, uint8_t* data)
         break;
         
         case WHISKER_TYPE_COMMENT:
+        case WHISKER_TYPE_TIMESTAMP:
             out->data = malloc(out->len);
             if(out->data == NULL)
                 throw(MALLOC_FAIL);
             memcpy(out->data, &data[2], out->len);
+        break;
+
+        case WHISKER_TYPE_GPS:
+            cats_gps_whisker_t gps;
+            memcpy(&gps.latitude, &data[2], sizeof(int32_t));
+            memcpy(&gps.longitude, &data[6], sizeof(int32_t));
+            memcpy(&gps.altitude, &data[10], sizeof(uint16_t));
+            memcpy(&gps.maxError, &data[12], sizeof(uint8_t));
+            memcpy(&gps.heading, &data[13], sizeof(uint8_t));
+            memcpy(&gps.speed, &data[14], sizeof(uint16_t));
+
+            // Copy to output
+            out->data = malloc(sizeof(cats_gps_whisker_t));
+            if(out->data == NULL)
+                throw(MALLOC_FAIL);
+            memcpy(out->data, (void*)&gps, sizeof(cats_gps_whisker_t));
         break;
 
         // Unsupported type
