@@ -33,3 +33,6 @@ cats_whisker_t* whiskers;
 cats_packet_decode(buf, bufSize, &whiskers);
 free(buf);
 ```
+
+## Contributing
+Pull requests are VERY much welcome! I'm still a novice when it comes to writing pure C, so there's a lot that can be improved.
