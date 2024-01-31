@@ -24,13 +24,23 @@ int len = cats_packet_build(pkt, &buf); // Allocates buf automatically
 free(pkt); // Packet builder no longer needed
 ```
 
-Decoding a packet:
-
-Note: this API will be changed significantly
+Decoding a packet and reading the identification and comment fields:
 ```c
 uint8_t* buf = ... // Buffer with the received packet
-cats_whisker_t* whiskers;
-cats_packet_decode(buf, bufSize, &whiskers);
+cats_packet_t* pkt;
+
+if(!cats_packet_from_buf(pkt, buf, bufLen)) {
+    fprintf(stderr, cats_error_str);
+    return -1; // Decode failed
+}
+
+char comment[1024];
+char callsign[255];
+uint8_t ssid;
+uint16_t icon;
+cats_packet_get_identification(pkt, callsign, &ssid, &icon);
+cats_packet_get_comment(pkt, comment);
+
 free(buf);
 ```
 
