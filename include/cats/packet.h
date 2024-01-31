@@ -65,6 +65,12 @@ Returns 0 on success
 */
 int cats_packet_add_whisker(cats_packet_t* pkt, cats_whisker_t** whisker);
 
+/*
+Get all instances of a whisker type in a packet
+
+Returns array of whiskers; CATS_FAIL on fail
+*/
+cats_whisker_t** cats_packet_find_whiskers(cats_packet_t* pkt, cats_whisker_type_t type);
 
 /*
 Get the identification fields from a packet

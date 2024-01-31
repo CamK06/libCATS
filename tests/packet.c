@@ -32,7 +32,7 @@ void test_decode()
     memcpy(buf, orig, 68);
 
     int r = cats_packet_decode(buf+2, 68-2, NULL); // buf+2 is to skip length bytes
-    assert(r == 2); // TODO: Compare actual whisker count to expected count
+    assert(r == 2);
 
     free(buf);
 }
@@ -54,6 +54,20 @@ void test_encode_decode()
     int r = cats_packet_from_buf(pkt, buf, len);
     assert(r == CATS_SUCCESS);
 
+    // Decode the identification whisker
+    char callsign[255];
+    uint8_t ssid;
+    uint16_t icon;
+    cats_packet_get_identification(pkt, callsign, &ssid, &icon);
+    assert(strcmp(callsign, "VE3KCN") == 0);
+    assert(ssid == 7);
+    assert(icon == 1);
+
+    // Decode the comment
+    char comment[1024];
+    cats_packet_get_comment(pkt, comment);
+    assert(strcmp(comment, "Hello libCATS world!") == 0);
+
     free(pkt);
     free(buf);
 }
@@ -63,15 +77,5 @@ int main()
     test_crc16();
     test_decode();
     test_encode_decode();
-
-    // uint16_t len;
-    // FILE* pkt = fopen("packet.bin", "r");
-    // uint8_t* buf = malloc(8192);
-    // fread(&len, 1, 2, pkt);
-    // fread(buf, 1, len, pkt);
-    // cats_packet_decode(buf, len, NULL);
-
-    //fclose(pkt);
-
     return 0;
 }

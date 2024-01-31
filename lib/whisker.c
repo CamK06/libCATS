@@ -48,31 +48,37 @@ int cats_whisker_decode(cats_whisker_t* whiskerOut, uint8_t* data)
     
     switch(out->type) {
         case WHISKER_TYPE_IDENTIFICATION:
-        cats_ident_whisker_t ident;
-        memcpy(&ident.icon, &data[2], sizeof(uint16_t));
-        memcpy(ident.callsign, &data[4], out->len-3);
-        ident.ssid = data[out->len+1];
-        out->data = malloc(sizeof(cats_ident_whisker_t));
-        memcpy(out->data, (void*)&ident, sizeof(cats_ident_whisker_t));
+            // Callsign
+            cats_ident_whisker_t ident;
+            ident.callsign = malloc(out->len-3);
+            if(ident.callsign == NULL)
+                throw(MALLOC_FAIL);
+            memcpy(ident.callsign, &data[4], out->len-3);
+
+            // SSID + Icon
+            ident.ssid = data[out->len+1];
+            memcpy(&ident.icon, &data[2], sizeof(uint16_t));
+
+            // Copy to output
+            out->data = malloc(sizeof(cats_ident_whisker_t));
+            if(out->data == NULL)
+                throw(MALLOC_FAIL);
+            memcpy(out->data, (void*)&ident, sizeof(cats_ident_whisker_t));
         break;
         
         case WHISKER_TYPE_COMMENT:
-        out->data = malloc(out->len);
-        memcpy(out->data, &data[2], out->len);
+            out->data = malloc(out->len);
+            if(out->data == NULL)
+                throw(MALLOC_FAIL);
+            memcpy(out->data, &data[2], out->len);
         break;
 
         // Unsupported type
         default:
-        free(out);
-        throw(UNSUPPORTED_WHISKER);
+            free(out);
+            throw(UNSUPPORTED_WHISKER);
     }
 
-    
-    // TODO: ??? remove this? out-> data should've been allocated above.
-	out->data = malloc(data[1]);
-    if(out->data == NULL)
-        throw(MALLOC_FAIL);
-	memcpy(out->data, &data[2], data[1]);
     memcpy(whiskerOut, out, sizeof(cats_whisker_t));
     free(out);
     return CATS_SUCCESS;
