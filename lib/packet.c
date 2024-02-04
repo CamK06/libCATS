@@ -7,7 +7,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <endian.h>
 
 int cats_packet_prepare(cats_packet_t** pkt)
 {
@@ -99,7 +98,7 @@ int cats_packet_add_whisker(cats_packet_t* pkt, cats_whisker_t** whisker)
 			throw(MALLOC_FAIL);
 	}
 	else {
-		cats_whisker_t* tmp = realloc(pkt->whiskers, pkt->numWhiskers * sizeof *tmp);
+		cats_whisker_t* tmp = realloc(pkt->whiskers, pkt->numWhiskers * sizeof(cats_whisker_t));
 		if(tmp == NULL)
 			throw(MALLOC_FAIL);
 		pkt->whiskers = tmp;
