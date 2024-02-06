@@ -7,7 +7,7 @@
 // Maybe find a better way to do this? Feels wrong.
 //#define throw(err) do { cats_throw_err(err, #err " " (__FILE__ + SOURCE_PATH_SIZE) __LINE__); return CATS_FAIL; } while(0)
 #define throw(err) do { cats_throw_err(err, #err); return CATS_FAIL; } while(0)
-#define throw_msg(err, msg...) do { cats_throw_err(err, #err " " msg); return CATS_FAIL; } while(0)
+#define throw_msg(err, msg) do { cats_throw_err(err, #err " " msg); return CATS_FAIL; } while(0)
 
 typedef enum {
     MALLOC_FAIL,
