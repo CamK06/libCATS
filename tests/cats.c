@@ -17,7 +17,7 @@ int test_error()
 
 int test_error_msg()
 {
-    throw(MALLOC_FAIL, "This is a test error message!");
+    throw_msg(MALLOC_FAIL, "This is a test error message!");
 }
 
 void test_float16()
@@ -31,7 +31,7 @@ void test_float16()
 int main()
 {
     assert(test_error() == CATS_FAIL);
-    assert(strcmp(cats_error_str, "MALLOC_FAIL ") == 0);
+    assert(strcmp(cats_error_str, "MALLOC_FAIL") == 0);
     assert(test_error_msg() == CATS_FAIL);
     assert(strcmp(cats_error_str, "MALLOC_FAIL This is a test error message!") == 0);
     test_float16();

@@ -108,7 +108,7 @@ cats_whisker_t** cats_packet_find_whiskers(cats_packet_t* pkt, cats_whisker_type
 		if(pkt->whiskers[i].type == type) 
 			found++;
 	if(found <= 0)
-		throw(WHISKER_NOT_FOUND, "cats_packet_find_whiskers: no whiskers of specified type found!");
+		throw_msg(WHISKER_NOT_FOUND, "cats_packet_find_whiskers: no whiskers of specified type found!");
 
 	// Add matched whiskers to array
 	cats_whisker_t** out = malloc(sizeof(cats_whisker_t)*found);
@@ -126,7 +126,7 @@ int cats_packet_get_identification(cats_packet_t* pkt, char* callsign, uint8_t* 
 {
 	cats_whisker_t** r = cats_packet_find_whiskers(pkt, WHISKER_TYPE_IDENTIFICATION);
 	if(r <= CATS_FAIL)
-		throw(WHISKER_NOT_FOUND, "cats_packet_get_identification: packet has no identification whisker!");
+		throw_msg(WHISKER_NOT_FOUND, "cats_packet_get_identification: packet has no identification whisker!");
 	cats_whisker_t* whisker = *r;
 	free(r);
 	
@@ -141,12 +141,12 @@ int cats_packet_get_comment(cats_packet_t* pkt, char* comment)
 {
 	cats_whisker_t** r = cats_packet_find_whiskers(pkt, WHISKER_TYPE_COMMENT);
 	if(r <= CATS_FAIL)
-		throw(WHISKER_NOT_FOUND, "cats_packet_get_comment: packet has no comment whiskers!");
+		throw_msg(WHISKER_NOT_FOUND, "cats_packet_get_comment: packet has no comment whiskers!");
 	cats_whisker_t* whisker = *r; // TODO: Handle comments across multiple whiskers
 	free(r);
 
 	if(whisker->len <= 0)
-		throw(INVALID_OR_NO_COMMENT, "cats_packet_get_comment: comment whisker length is <= 0!");
+		throw_msg(INVALID_OR_NO_COMMENT, "cats_packet_get_comment: comment whisker length is <= 0!");
 	strcpy(comment, whisker->data.raw);
 	return CATS_SUCCESS;
 }
