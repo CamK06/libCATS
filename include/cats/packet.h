@@ -63,13 +63,15 @@ int cats_packet_add_repeater(uint32_t up, uint32_t down, cats_modulation_t modul
 int cats_packet_add_node_info(); // TODO
 
 /*
-Add a whisker to a packet
+Add a whisker to a packet from its data (constructs remainder of whisker)
 
 Note: whisker is deallocated after being copied
 
 Returns 0 on success
 */
-int cats_packet_add_whisker(cats_packet_t* pkt, cats_whisker_t** whisker);
+int cats_packet_add_whisker_data(cats_packet_t* pkt, cats_whisker_type_t type, cats_whisker_data_t* whiskerData, int len);
+
+int cats_packet_add_whisker(cats_packet_t* pkt, cats_whisker_t* whisker);
 
 /*
 Get all instances of a whisker type in a packet

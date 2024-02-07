@@ -111,5 +111,6 @@ whisker must already be allocated
 */
 int cats_whisker_decode(cats_whisker_t* whiskerOut, uint8_t* data);
 
+int cats_whisker_base_len(cats_whisker_type_t type);
 
 #endif

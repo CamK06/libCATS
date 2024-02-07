@@ -50,15 +50,8 @@ int cats_packet_add_identification(cats_packet_t* pkt, char* callsign, uint8_t s
 	identification.ssid = ssid;
 	identification.icon = icon;
 	memcpy(identification.callsign, callsign, strlen(callsign));
-	
-	cats_whisker_t* whisker = malloc(sizeof(cats_whisker_t));
-	if(whisker == NULL)
-		throw(MALLOC_FAIL);
-	whisker->type = WHISKER_TYPE_IDENTIFICATION;
-	whisker->len = 3+strlen(callsign);
-	whisker->data.identification = identification;
 
-	return cats_packet_add_whisker(pkt, &whisker);
+	return cats_packet_add_whisker_data(pkt, WHISKER_TYPE_IDENTIFICATION, (cats_whisker_data_t*)&identification, 3+strlen(callsign));
 }
 
 int cats_packet_add_comment(cats_packet_t* pkt, char* comment)
@@ -70,19 +63,27 @@ int cats_packet_add_comment(cats_packet_t* pkt, char* comment)
 	if(pkt->len+2+strlen(comment) > CATS_MAX_PKT_LEN)
 		throw(PACKET_TOO_BIG);
 
-	cats_whisker_t* whisker = malloc(sizeof(cats_whisker_t));
-	if(whisker == NULL)
-		throw(MALLOC_FAIL);
-	whisker->type = WHISKER_TYPE_COMMENT;
-	whisker->len = strlen(comment);
-	strcpy(whisker->data.raw, comment);
+	cats_whisker_t whisker;
+	whisker.type = WHISKER_TYPE_COMMENT;
+	whisker.len = strlen(comment);
+	strcpy(whisker.data.raw, comment);
 
 	return cats_packet_add_whisker(pkt, &whisker);
 }
 
-int cats_packet_add_whisker(cats_packet_t* pkt, cats_whisker_t** whisker)
+int cats_packet_add_whisker_data(cats_packet_t* pkt, cats_whisker_type_t type, cats_whisker_data_t* whiskerData, int len)
 {
-	pkt->len += (*whisker)->len+2;
+	cats_whisker_t whisker;
+	whisker.type = type;
+	whisker.len = len;
+	whisker.data = *whiskerData;
+
+	return cats_packet_add_whisker(pkt, &whisker);
+}
+
+int cats_packet_add_whisker(cats_packet_t* pkt, cats_whisker_t* whisker)
+{
+	pkt->len += whisker->len+2;
 	pkt->numWhiskers++;
 	if(pkt->whiskers == NULL) {
 		pkt->whiskers = malloc(sizeof(cats_whisker_t));
@@ -95,8 +96,8 @@ int cats_packet_add_whisker(cats_packet_t* pkt, cats_whisker_t** whisker)
 			throw(MALLOC_FAIL);
 		pkt->whiskers = tmp;
 	}
-	memcpy((void*)pkt->whiskers+(sizeof(cats_whisker_t)*(pkt->numWhiskers-1)), *whisker, sizeof(cats_whisker_t));
-	free(*whisker);
+	memcpy((void*)pkt->whiskers+(sizeof(cats_whisker_t)*(pkt->numWhiskers-1)), whisker, sizeof(cats_whisker_t));
+
 	return CATS_SUCCESS;
 }
 
@@ -111,7 +112,7 @@ cats_whisker_t** cats_packet_find_whiskers(cats_packet_t* pkt, cats_whisker_type
 		throw_msg(WHISKER_NOT_FOUND, "cats_packet_find_whiskers: no whiskers of specified type found!");
 
 	// Add matched whiskers to array
-	cats_whisker_t** out = malloc(sizeof(cats_whisker_t)*found);
+	cats_whisker_t** out = malloc(sizeof(cats_whisker_t*)*found);
 	if(out == NULL)
 		throw(MALLOC_FAIL);
 	int idx = 0;
@@ -134,6 +135,7 @@ int cats_packet_get_identification(cats_packet_t* pkt, char* callsign, uint8_t* 
 	strcpy(callsign, data->identification.callsign);
 	memcpy(ssid, &data->identification.ssid, sizeof(uint8_t));
 	memcpy(icon, &data->identification.icon, sizeof(uint16_t));
+
 	return CATS_SUCCESS;
 }
 
@@ -148,6 +150,7 @@ int cats_packet_get_comment(cats_packet_t* pkt, char* comment)
 	if(whisker->len <= 0)
 		throw_msg(INVALID_OR_NO_COMMENT, "cats_packet_get_comment: comment whisker length is <= 0!");
 	strcpy(comment, whisker->data.raw);
+
 	return CATS_SUCCESS;
 }
 
@@ -183,6 +186,7 @@ int cats_packet_encode(cats_whisker_t* whiskers, int whiskerCount, uint8_t** dat
 	*dataOut = tmp;
 	memcpy(*dataOut, out, len);
 	free(out);
+	
 	return len;
 }
 

@@ -4,6 +4,19 @@
 #include <string.h>
 #include <stdint.h>
 
+uint8_t baseLengths[] = {
+    3,  // IDENTIFICATION
+    5,  // TIMESTAMP
+    14, // GPS
+    0,  // COMMENT
+    1,  // ROUTE
+    2,  // DESTINATION
+    0,  // ARBITRARY
+    6,  // SIMPLEX
+    17, // REPEATER
+    3,  // NODEINFO
+};
+
 int cats_whisker_encode(cats_whisker_t* whisker, uint8_t* dataOut)
 {
     uint8_t out[whisker->len+2];
@@ -135,4 +148,12 @@ int cats_whisker_decode(cats_whisker_t* whiskerOut, uint8_t* data)
 
     memcpy(whiskerOut, &out, sizeof(cats_whisker_t));
     return CATS_SUCCESS;
+}
+
+int cats_whisker_base_len(cats_whisker_type_t type)
+{
+    if(type < 0 || type > 9)
+        throw(UNSUPPORTED_WHISKER);
+
+    return baseLengths[type];
 }
