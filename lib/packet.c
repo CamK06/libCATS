@@ -3,6 +3,7 @@
 #include "cats/packet.h"
 #include "cats/ldpc.h"
 #include "cats/error.h"
+#include "cats/util.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -69,6 +70,47 @@ int cats_packet_add_comment(cats_packet_t* pkt, char* comment)
 	strcpy(whisker.data.raw, comment);
 
 	return cats_packet_add_whisker(pkt, &whisker);
+}
+
+int cats_packet_add_gps(cats_packet_t* pkt, double lat, double lon, float alt, uint8_t error, uint8_t heading, float speed)
+{
+	if(pkt->len+2+cats_whisker_base_len(WHISKER_TYPE_GPS) > CATS_MAX_PKT_LEN)
+		throw(PACKET_TOO_BIG);
+
+	cats_gps_whisker_t gps;
+	gps.altitude = float32_to_float16(alt);
+	gps.heading = heading;
+	gps.speed = float32_to_float16(speed);
+	gps.maxError = error;
+	gps.latitude = lat_to_int32(lat);
+	gps.longitude = lon_to_int32(lon);
+
+	return cats_packet_add_whisker_data(pkt, WHISKER_TYPE_GPS, (cats_whisker_data_t*)&gps, cats_whisker_base_len(WHISKER_TYPE_GPS));
+}
+
+int cats_packet_add_route()
+{
+	// TODO
+}
+
+int cats_packet_add_destination(uint8_t* callsign, uint8_t ssid, uint8_t ack)
+{
+
+}
+
+int cats_packet_add_simplex(uint32_t frequency, cats_modulation_t modulation, uint8_t power)
+{
+
+}
+
+int cats_packet_add_repeater(uint32_t up, uint32_t down, cats_modulation_t modulation, uint32_t tone, uint8_t power, uint16_t lat, uint16_t lon, uint8_t* name)
+{
+
+}
+
+int cats_packet_add_node_info()
+{
+	// TODO
 }
 
 int cats_packet_add_whisker_data(cats_packet_t* pkt, cats_whisker_type_t type, cats_whisker_data_t* whiskerData, int len)

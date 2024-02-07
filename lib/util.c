@@ -1,7 +1,7 @@
 #include "cats/util.h"
 #include <stdint.h>
 
-// Functions I was too lazy and tired to research and write, so ChatGPT wrote them
+// Functions I was mostly too lazy and tired to research and write, so ChatGPT wrote them
 
 uint16_t float32_to_float16(float value) {
     uint32_t f32 = *(uint32_t*)&value;
@@ -27,4 +27,24 @@ void uint64_to_5byte(uint64_t value, uint8_t* result) {
     result[2] = (value >> 16) & 0xFF;
     result[3] = (value >> 8) & 0xFF;
     result[4] = value & 0xFF;
+}
+
+int32_t lat_to_int32(double lat)
+{
+    return (int32_t)(lat * (float)(1 << 31) / 90);
+}
+
+int32_t lon_to_int32(double lon)
+{
+    return (int32_t)(lon * (float)(1 << 31) / 180);
+}
+
+double int32_to_lat(int32_t lat)
+{
+    return (double)lat / (float)(1 << 31) * 90;
+}
+
+double int32_to_lon(int32_t lon)
+{
+    return (double)lon / (float)(1 << 31) * 180;
 }

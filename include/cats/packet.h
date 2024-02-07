@@ -55,7 +55,7 @@ Returns 0 on success
 */
 int cats_packet_add_comment(cats_packet_t* pkt, char* comment);
 
-int cats_packet_add_gps(cats_packet_t* pkt, int32_t lat, int32_t lon, float alt, uint8_t error, uint8_t heading, float speed);
+int cats_packet_add_gps(cats_packet_t* pkt, double lat, double lon, float alt, uint8_t error, uint8_t heading, float speed);
 int cats_packet_add_route(); // TODO
 int cats_packet_add_destination(uint8_t* callsign, uint8_t ssid, uint8_t ack);
 int cats_packet_add_simplex(uint32_t frequency, cats_modulation_t modulation, uint8_t power);
