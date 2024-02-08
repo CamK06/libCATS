@@ -39,12 +39,12 @@ typedef struct cats_ident_whisker {
 } cats_ident_whisker_t;
 
 typedef struct cats_gps_whisker {
-	int32_t latitude;
-	int32_t longitude;
-	uint16_t altitude;
+	double latitude;
+	double longitude;
+	float altitude;
 	uint8_t maxError;
 	uint8_t heading;
-	uint16_t speed;
+	float speed;
 } cats_gps_whisker_t;
 
 typedef struct cats_route_whisker {

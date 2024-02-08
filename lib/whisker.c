@@ -1,5 +1,6 @@
 #include "cats/whisker.h"
 #include "cats/error.h"
+#include "cats/util.h"
 
 #include <string.h>
 #include <stdint.h>
@@ -38,12 +39,17 @@ int cats_whisker_encode(cats_whisker_t* whisker, uint8_t* dataOut)
         break;
 
         case WHISKER_TYPE_GPS:
-            memcpy(&out[2], &data->gps.latitude, sizeof(int32_t));
-            memcpy(&out[6], &data->gps.longitude, sizeof(int32_t));
-            memcpy(&out[10], &data->gps.altitude, sizeof(uint16_t));
+            int32_t lat = lat_to_int32(data->gps.latitude);
+            int32_t lon = lon_to_int32(data->gps.longitude);
+            uint16_t alt = float32_to_float16(data->gps.altitude);
+            uint16_t vel = float32_to_float16(data->gps.speed);
+
+            memcpy(&out[2], &lat, sizeof(int32_t));
+            memcpy(&out[6], &lon, sizeof(int32_t));
+            memcpy(&out[10], &alt, sizeof(uint16_t));
             memcpy(&out[12], &data->gps.maxError, sizeof(uint8_t));
             memcpy(&out[13], &data->gps.heading, sizeof(uint8_t));
-            memcpy(&out[14], &data->gps.speed, sizeof(uint16_t));
+            memcpy(&out[14], &vel, sizeof(uint16_t));
         break;
 
         case WHISKER_TYPE_ROUTE:
@@ -105,12 +111,20 @@ int cats_whisker_decode(cats_whisker_t* whiskerOut, uint8_t* data)
         break;
 
         case WHISKER_TYPE_GPS:
-            memcpy(&whiskerData->gps.latitude, &data[2], sizeof(int32_t));
-            memcpy(&whiskerData->gps.longitude, &data[6], sizeof(int32_t));
-            memcpy(&whiskerData->gps.altitude, &data[10], sizeof(uint16_t));
+            int32_t lat, lon;
+            uint16_t alt, vel;
+
+            memcpy(&lat, &data[2], sizeof(int32_t));
+            memcpy(&lon, &data[6], sizeof(int32_t));
+            memcpy(&alt, &data[10], sizeof(uint16_t));
             memcpy(&whiskerData->gps.maxError, &data[12], sizeof(uint8_t));
             memcpy(&whiskerData->gps.heading, &data[13], sizeof(uint8_t));
-            memcpy(&whiskerData->gps.speed, &data[14], sizeof(uint16_t));
+            memcpy(&vel, &data[14], sizeof(uint16_t));
+
+            whiskerData->gps.latitude = int32_to_lat(lat);
+            whiskerData->gps.longitude = int32_to_lon(lon);
+            whiskerData->gps.altitude = float16_to_float32(alt);
+            whiskerData->gps.speed = float16_to_float32(vel);
         break;
 
         case WHISKER_TYPE_ROUTE:

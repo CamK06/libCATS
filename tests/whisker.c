@@ -10,6 +10,7 @@ libCATS Whisker Test
 #include <stdlib.h>
 #include <assert.h>
 #include <math.h>
+#include <float.h>
 
 void test_identification()
 {
@@ -65,12 +66,12 @@ void test_timestamp()
 void test_gps()
 {
     cats_gps_whisker_t data;
-    data.altitude = float32_to_float16(50.3f);
+    data.altitude = 50.3f;
     data.heading = 8;
-    data.speed = float32_to_float16(69);
+    data.speed = 69;
     data.maxError = 5;
-    data.latitude = 47573135;
-    data.longitude = -53556391;
+    data.latitude = 47.573135;
+    data.longitude = -53.556391;
 
     cats_whisker_t* whisker = malloc(sizeof(cats_whisker_t));
     whisker->type = WHISKER_TYPE_GPS;
@@ -86,12 +87,12 @@ void test_gps()
     assert(cats_whisker_decode(whisker, buf) == CATS_SUCCESS);
 
     data = whisker->data.gps;
-    assert(fabs(float16_to_float32(data.altitude)-50.3f) <= 0.05f);
+    assert(fabs(data.altitude-50.3f) <= 0.05f);
     assert(data.heading == 8);
-    assert(fabs(float16_to_float32(data.speed)-69) <= 0.05f);
+    assert(fabs(data.speed-69) <= 0.05f);
     assert(data.maxError == 5);
-    assert(data.latitude == 47573135);
-    assert(data.longitude == -53556391);
+    assert(fabs(data.latitude-47.573135) < 0.0000001);
+    assert(fabs(data.longitude-(-53.556391)) <= 0.0000001);
 
     free(whisker);
 }
