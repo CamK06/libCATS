@@ -70,13 +70,16 @@ int cats_whisker_encode(cats_whisker_t* whisker, uint8_t* dataOut)
         break;
 
         case WHISKER_TYPE_REPEATER:
+            int16_t rlat = lat_to_int16(data->repeater.latitude);
+            int16_t rlon = lon_to_int16(data->repeater.longitude);
+            
             memcpy(&out[2], &data->repeater.uplink, sizeof(uint32_t));
             memcpy(&out[6], &data->repeater.downlink, sizeof(uint32_t));
             memcpy(&out[10], &data->repeater.modulation, sizeof(uint8_t));
             memcpy(&out[11], &data->repeater.tone, 3);
             memcpy(&out[14], &data->repeater.power, sizeof(uint8_t));
-            memcpy(&out[15], &data->repeater.latitude, sizeof(int16_t));
-            memcpy(&out[17], &data->repeater.longitude, sizeof(int16_t));
+            memcpy(&out[15], &rlat, sizeof(int16_t));
+            memcpy(&out[17], &rlon, sizeof(int16_t));
             memcpy(&out[19], data->repeater.name, whisker->len-17);
         break;
 
@@ -145,14 +148,19 @@ int cats_whisker_decode(cats_whisker_t* whiskerOut, uint8_t* data)
         break;
 
         case WHISKER_TYPE_REPEATER:
+            int16_t rlat, rlon;
+
             memcpy(&whiskerData->repeater.uplink, &data[2], sizeof(uint32_t));
             memcpy(&whiskerData->repeater.downlink, &data[6], sizeof(uint32_t));
             memcpy(&whiskerData->repeater.modulation, &data[10], sizeof(uint8_t));
             memcpy(&whiskerData->repeater.tone, &data[11], 3);
             memcpy(&whiskerData->repeater.power, &data[14], sizeof(uint8_t));
-            memcpy(&whiskerData->repeater.latitude, &data[15], sizeof(int16_t));
-            memcpy(&whiskerData->repeater.longitude, &data[17], sizeof(int16_t));
+            memcpy(&rlat, &data[15], sizeof(int16_t));
+            memcpy(&rlon, &data[17], sizeof(int16_t));
             memcpy(whiskerData->repeater.name, &data[19], out.len-17);
+
+            whiskerData->repeater.latitude = int16_to_lat(rlat);
+            whiskerData->repeater.longitude = int16_to_lon(rlon);
         break;
 
         // Unsupported type

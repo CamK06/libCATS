@@ -48,3 +48,23 @@ double int32_to_lon(int32_t lon)
 {
     return (double)lon / (float)(1 << 31) * 180;
 }
+
+int16_t lat_to_int16(double lat)
+{
+    return (int16_t)(lat * (float)(1 << 15) / 90);
+}
+
+int16_t lon_to_int16(double lon)
+{
+    return (int16_t)(lon * (float)(1 << 15) / 180);
+}
+
+double int16_to_lat(int16_t lat)
+{
+    return (double)lat / (float)(1 << 15) * 90;
+}
+
+double int16_to_lon(int16_t lon)
+{
+    return (double)lon / (float)(1 << 15) * 180;
+}

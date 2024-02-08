@@ -50,7 +50,7 @@ int cats_packet_add_identification(cats_packet_t* pkt, char* callsign, uint8_t s
 	cats_ident_whisker_t identification;
 	identification.ssid = ssid;
 	identification.icon = icon;
-	memcpy(identification.callsign, callsign, strlen(callsign));
+	strcpy(identification.callsign, callsign);
 
 	return cats_packet_add_whisker_data(pkt, WHISKER_TYPE_IDENTIFICATION, (cats_whisker_data_t*)&identification, 3+strlen(callsign));
 }
@@ -78,12 +78,12 @@ int cats_packet_add_gps(cats_packet_t* pkt, double lat, double lon, float alt, u
 		throw(PACKET_TOO_BIG);
 
 	cats_gps_whisker_t gps;
-	gps.altitude = float32_to_float16(alt);
+	gps.altitude = alt;
 	gps.heading = heading;
-	gps.speed = float32_to_float16(speed);
+	gps.speed = speed;
 	gps.maxError = error;
-	gps.latitude = lat_to_int32(lat);
-	gps.longitude = lon_to_int32(lon);
+	gps.latitude = lat;
+	gps.longitude = lon;
 
 	return cats_packet_add_whisker_data(pkt, WHISKER_TYPE_GPS, (cats_whisker_data_t*)&gps, cats_whisker_base_len(WHISKER_TYPE_GPS));
 }
@@ -93,19 +93,48 @@ int cats_packet_add_route()
 	// TODO
 }
 
-int cats_packet_add_destination(uint8_t* callsign, uint8_t ssid, uint8_t ack)
+int cats_packet_add_destination(cats_packet_t* pkt, uint8_t* callsign, uint8_t ssid, uint8_t ack)
 {
+	if(pkt->len+2+cats_whisker_base_len(WHISKER_TYPE_DESTINATION) > CATS_MAX_PKT_LEN)
+		throw(PACKET_TOO_BIG);
 
+	cats_destination_whisker_t dest;
+	dest.ack = ack;
+	dest.ssid = ssid;
+	strcpy(dest.callsign, callsign);
+
+	return cats_packet_add_whisker_data(pkt, WHISKER_TYPE_DESTINATION, (cats_whisker_data_t*)&dest, cats_whisker_base_len(WHISKER_TYPE_DESTINATION)+strlen(callsign));
 }
 
-int cats_packet_add_simplex(uint32_t frequency, cats_modulation_t modulation, uint8_t power)
+int cats_packet_add_simplex(cats_packet_t* pkt, uint32_t frequency, cats_modulation_t modulation, uint8_t power)
 {
+	if(pkt->len+2+cats_whisker_base_len(WHISKER_TYPE_SIMPLEX) > CATS_MAX_PKT_LEN)
+		throw(PACKET_TOO_BIG);
 
+	cats_simplex_whisker_t simplex;
+	simplex.frequency = frequency;
+	simplex.modulation = modulation;
+	simplex.power = power;
+
+	return cats_packet_add_whisker_data(pkt, WHISKER_TYPE_SIMPLEX, (cats_whisker_data_t*)&simplex, cats_whisker_base_len(WHISKER_TYPE_SIMPLEX));
 }
 
-int cats_packet_add_repeater(uint32_t up, uint32_t down, cats_modulation_t modulation, uint32_t tone, uint8_t power, uint16_t lat, uint16_t lon, uint8_t* name)
+int cats_packet_add_repeater(cats_packet_t* pkt, uint32_t up, uint32_t down, cats_modulation_t modulation, uint32_t tone, uint8_t power, double lat, double lon, uint8_t* name)
 {
+	if(pkt->len+2+cats_whisker_base_len(WHISKER_TYPE_REPEATER) > CATS_MAX_PKT_LEN)
+		throw(PACKET_TOO_BIG);
 
+	cats_repeater_whisker_t repeater;
+	repeater.uplink = up;
+	repeater.downlink = down;
+	repeater.latitude = lat;
+	repeater.longitude = lon;
+	repeater.modulation = modulation;
+	repeater.power = power;
+	repeater.tone = tone;
+	strcpy(repeater.name, name);
+
+	return cats_packet_add_whisker_data(pkt, WHISKER_TYPE_REPEATER, (cats_whisker_data_t*)&repeater, cats_whisker_base_len(WHISKER_TYPE_REPEATER)+strlen(name));
 }
 
 int cats_packet_add_node_info()
@@ -165,7 +194,7 @@ cats_whisker_t** cats_packet_find_whiskers(cats_packet_t* pkt, cats_whisker_type
 	return out;
 }
 
-int cats_packet_get_identification(cats_packet_t* pkt, char* callsign, uint8_t* ssid, uint16_t* icon)
+int cats_packet_get_identification(cats_packet_t* pkt, cats_ident_whisker_t** out)
 {
 	cats_whisker_t** r = cats_packet_find_whiskers(pkt, WHISKER_TYPE_IDENTIFICATION);
 	if(r <= CATS_FAIL)
@@ -173,10 +202,7 @@ int cats_packet_get_identification(cats_packet_t* pkt, char* callsign, uint8_t* 
 	cats_whisker_t* whisker = *r;
 	free(r);
 	
-	cats_whisker_data_t* data = &whisker->data;
-	strcpy(callsign, data->identification.callsign);
-	memcpy(ssid, &data->identification.ssid, sizeof(uint8_t));
-	memcpy(icon, &data->identification.icon, sizeof(uint16_t));
+	*out = &whisker->data.identification;
 
 	return CATS_SUCCESS;
 }
@@ -194,6 +220,68 @@ int cats_packet_get_comment(cats_packet_t* pkt, char* comment)
 	strcpy(comment, whisker->data.raw);
 
 	return CATS_SUCCESS;
+}
+
+int cats_packet_get_gps(cats_packet_t* pkt, cats_gps_whisker_t** out)
+{
+	cats_whisker_t** r = cats_packet_find_whiskers(pkt, WHISKER_TYPE_GPS);
+	if(r <= CATS_FAIL)
+		throw_msg(WHISKER_NOT_FOUND, "cats_packet_get_gps: packet has no GPS whiskers!");
+	cats_whisker_t* whisker = *r;
+	free(r);
+
+	*out = &whisker->data.gps;
+
+	return CATS_SUCCESS;
+}
+
+int cats_packet_get_route()
+{
+	// TODO
+}
+
+int cats_packet_get_destination(cats_packet_t* pkt, cats_destination_whisker_t** out)
+{
+	cats_whisker_t** r = cats_packet_find_whiskers(pkt, WHISKER_TYPE_DESTINATION);
+	if(r <= CATS_FAIL)
+		throw_msg(WHISKER_NOT_FOUND, "cats_packet_get_destination: packet has no destination whiskers!");
+	cats_whisker_t* whisker = *r;
+	free(r);
+	
+	*out = &whisker->data.destination;
+
+	return CATS_SUCCESS;
+}
+
+int cats_packet_get_simplex(cats_packet_t* pkt, cats_simplex_whisker_t** out)
+{
+	cats_whisker_t** r = cats_packet_find_whiskers(pkt, WHISKER_TYPE_SIMPLEX);
+	if(r <= CATS_FAIL)
+		throw_msg(WHISKER_NOT_FOUND, "cats_packet_get_simplex: packet has no simplex whiskers!");
+	cats_whisker_t* whisker = *r;
+	free(r);
+
+	*out = &whisker->data.simplex;
+
+	return CATS_SUCCESS;
+}
+
+int cats_packet_get_repeater(cats_packet_t* pkt, cats_repeater_whisker_t** out)
+{
+	cats_whisker_t** r = cats_packet_find_whiskers(pkt, WHISKER_TYPE_REPEATER);
+	if(r <= CATS_FAIL)
+		throw_msg(WHISKER_NOT_FOUND, "cats_packet_get_repeater: packet has no repeater whiskers!");
+	cats_whisker_t* whisker = *r;
+	free(r);
+
+	*out = &whisker->data.repeater;
+
+	return CATS_SUCCESS;
+}
+
+int cats_packet_get_node_info()
+{
+	// TODO
 }
 
 int cats_packet_encode(cats_whisker_t* whiskers, int whiskerCount, uint8_t** dataOut)

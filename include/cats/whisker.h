@@ -70,8 +70,8 @@ typedef struct cats_repeater_whisker {
 	uint8_t modulation;
 	uint32_t tone;
 	uint8_t power;
-	int16_t latitude;
-	int16_t longitude;
+	double latitude;
+	double longitude;
 	uint8_t name[238];
 } cats_repeater_whisker_t;
 

@@ -10,6 +10,7 @@ libCATS Packet Test
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <math.h>
 
 void test_crc16()
 {
@@ -45,6 +46,12 @@ void test_encode_decode()
     cats_packet_prepare(&pkt);
     cats_packet_add_identification(pkt, "VE3KCN", 7, 1);
     cats_packet_add_comment(pkt, "Hello libCATS world!");
+    cats_packet_add_destination(pkt, "VE3KCN", 5, 0);
+    cats_packet_add_gps(pkt, 47.573135, -53.556391, 50.3f, 5, 8, 69.0f);
+    cats_packet_add_repeater(pkt, 147520000, 146520000, MOD_FM, 1, 200, 47.57, -53.55, "VE3KCN-R");
+    cats_packet_add_simplex(pkt, 14652000, MOD_FM, 5);
+    //cats_packet_add_node_info();
+    //cats_packet_add_route();
     int len = cats_packet_build(pkt, &buf);
     assert(len > 0);
     free(pkt);
@@ -54,19 +61,49 @@ void test_encode_decode()
     int r = cats_packet_from_buf(pkt, buf, len);
     assert(r == CATS_SUCCESS);
 
-    // Decode the identification whisker
-    char callsign[255];
-    uint8_t ssid;
-    uint16_t icon;
-    cats_packet_get_identification(pkt, callsign, &ssid, &icon);
-    assert(strcmp(callsign, "VE3KCN") == 0);
-    assert(ssid == 7);
-    assert(icon == 1);
+    // Decode the identification
+    cats_whisker_data_t* data;
+    cats_packet_get_identification(pkt, (cats_ident_whisker_t**)&data);
+    assert(strcmp(data->identification.callsign, "VE3KCN") == 0);
+    assert(data->identification.ssid == 7);
+    assert(data->identification.icon == 1);
 
     // Decode the comment
     char comment[1024];
     cats_packet_get_comment(pkt, comment);
     assert(strcmp(comment, "Hello libCATS world!") == 0);
+
+    // Decode destination
+    cats_packet_get_destination(pkt, (cats_destination_whisker_t**)&data);
+    assert(strcmp(data->destination.callsign, "VE3KCN") == 0);
+    assert(data->destination.ssid == 5);
+    assert(data->destination.ack == 0);
+
+    // Decode GPS
+    cats_packet_get_gps(pkt, (cats_gps_whisker_t**)&data);
+    assert(fabs(data->gps.altitude-50.3f) <= 0.05f);
+    assert(data->gps.heading == 8);
+    assert(fabs(data->gps.speed-69) <= 0.05f);
+    assert(data->gps.maxError == 5);
+    assert(fabs(data->gps.latitude-47.573135) < 0.0000001);
+    assert(fabs(data->gps.longitude-(-53.556391)) <= 0.0000001);
+
+    // Decode repeater
+    cats_packet_get_repeater(pkt, (cats_repeater_whisker_t**)&data);
+    assert(data->repeater.downlink == 146520000);
+    assert(data->repeater.uplink == 147520000);
+    assert(fabs(data->repeater.latitude-47.57) < 0.01);
+    assert(fabs(data->repeater.longitude-(-53.55)) <= 0.01);
+    assert(data->repeater.modulation == MOD_FM);
+    assert(data->repeater.power == 200);
+    assert(data->repeater.tone == 1);
+    assert(strcmp(data->repeater.name, "VE3KCN-R") == 0);
+
+    // Decode simplex
+    cats_packet_get_simplex(pkt, (cats_simplex_whisker_t**)&data);
+    assert(data->simplex.frequency == 14652000);
+    assert(data->simplex.modulation == MOD_FM);
+    assert(data->simplex.power == 5);
 
     free(pkt);
     free(buf);
