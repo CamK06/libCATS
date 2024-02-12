@@ -12,6 +12,8 @@ libCATS Whisker Test
 #include <math.h>
 #include <float.h>
 
+#include "util.h"
+
 void test_identification()
 {
     cats_ident_whisker_t data;
@@ -119,15 +121,27 @@ void test_comment()
 
 void test_route()
 {
-    uint8_t routeData[] = { 0xea, 0xff, 0x32 }; // TODO: Put real route data here 
+    cats_route_hop_t hop1; 
+    strcpy(hop1.callsign, "VE3KCN");
+    hop1.hopType = 0xFF;
+    hop1.rssi = 0x10;
+    hop1.ssid = 7;
+    cats_route_hop_t hop2; 
+    strcpy(hop2.callsign, "VE3KCN");
+    hop2.hopType = 0xFE;
+    hop2.rssi = 0x00;
+    hop2.ssid = 15;
 
     cats_route_whisker_t data;
     data.maxDigipeats = 3;
-    memcpy(data.routeData, routeData, sizeof(routeData));
+    for(int i = 0; i < 10; i++)
+        memset(data.hops[i].callsign, 0xFF, 16);
+    memcpy(&data.hops[0], &hop1, sizeof(cats_route_hop_t));
+    memcpy(&data.hops[1], &hop2, sizeof(cats_route_hop_t));
 
     cats_whisker_t* whisker = malloc(sizeof(cats_whisker_t));
     whisker->type = WHISKER_TYPE_ROUTE;
-    whisker->len = sizeof(routeData)+1;
+    whisker->len = sizeof(cats_route_hop_t)+1;
     whisker->data.route = data;
 
     uint8_t buf[whisker->len+2];
@@ -139,8 +153,16 @@ void test_route()
     assert(cats_whisker_decode(whisker, buf) == CATS_SUCCESS);
 
     data = whisker->data.route;
+
     assert(data.maxDigipeats == 3);
-    assert(memcmp(data.routeData, routeData, whisker->len-1) == 0);
+    assert(strcmp(data.hops->callsign, "VE3KCN") == 0);
+    assert(data.hops->hopType == 0xFF);
+    assert(data.hops->rssi == 0x10);
+    assert(data.hops->ssid == 7);
+    assert(strcmp(data.hops[1].callsign, "VE3KCN") == 0);
+    assert(data.hops[1].hopType == 0XFE);
+    assert(data.hops[1].rssi == 0x00);
+    assert(data.hops[1].ssid == 15);
 
     free(whisker);
 }

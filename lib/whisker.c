@@ -54,7 +54,19 @@ int cats_whisker_encode(cats_whisker_t* whisker, uint8_t* dataOut)
 
         case WHISKER_TYPE_ROUTE:
             memcpy(&out[2], &data->route.maxDigipeats, sizeof(uint8_t));
-            memcpy(&out[3], data->route.routeData, whisker->len-1);
+            if(whisker->len > 1) { // We have callsigns in the route
+                int rtIdx = 3;
+                for(int i = 0; i < 10; i++) {
+                    if(data->route.hops[i].callsign[0] == 0xFF)
+                        continue;
+                    strcpy(&out[rtIdx], data->route.hops[i].callsign);
+                    rtIdx += strlen(data->route.hops[i].callsign);
+                    memset(&out[rtIdx++], data->route.hops[i].hopType, 1);
+                    memset(&out[rtIdx++], data->route.hops[i].ssid, 1);
+                    if(data->route.hops[i].hopType != CATS_ROUTE_FUTURE)
+                        memset(&out[rtIdx++], data->route.hops[i].rssi, 1);
+                }
+            }
         break;
 
         case WHISKER_TYPE_DESTINATION:
@@ -132,7 +144,25 @@ int cats_whisker_decode(cats_whisker_t* whiskerOut, uint8_t* data)
 
         case WHISKER_TYPE_ROUTE:
             memcpy(&whiskerData->route.maxDigipeats, &data[2], sizeof(uint8_t));
-            memcpy(whiskerData->route.routeData, &data[3], out.len-1);
+            int rtIdx = 0;
+            int del = 0;
+            int beg = 3;
+            for(int i = 3; i < out.len; i++) {
+                if(data[i] == CATS_ROUTE_FUTURE || data[i] == CATS_ROUTE_INET
+                || data[i] == CATS_ROUTE_PAST) {
+                    del = i;
+                    memcpy(whiskerData->route.hops[rtIdx].callsign, &data[beg], del-beg);
+                    beg = del+2;
+                    whiskerData->route.hops[rtIdx].ssid = data[del+1];
+                    if(data[i] != CATS_ROUTE_FUTURE) {
+                        whiskerData->route.hops[rtIdx].rssi = data[del+2];
+                        beg++;
+                    }
+                    whiskerData->route.hops[rtIdx].hopType = data[del];
+                
+                    rtIdx++;
+                }
+            }
         break;
 
         case WHISKER_TYPE_DESTINATION:

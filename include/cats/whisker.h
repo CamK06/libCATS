@@ -3,6 +3,10 @@
 
 #include <stdint.h>
 
+#define CATS_ROUTE_PAST 0xFF
+#define CATS_ROUTE_FUTURE 0xFD
+#define CATS_ROUTE_INET 0xFE
+
 typedef enum cats_whisker_type {
 	WHISKER_TYPE_IDENTIFICATION,
 	WHISKER_TYPE_TIMESTAMP,
@@ -47,9 +51,16 @@ typedef struct cats_gps_whisker {
 	float speed;
 } cats_gps_whisker_t;
 
+typedef struct cats_route_hop {
+	uint8_t hopType;
+	uint8_t ssid;
+	uint8_t rssi;
+	uint8_t callsign[16];
+} cats_route_hop_t;
+
 typedef struct cats_route_whisker {
 	uint8_t maxDigipeats;
-	uint8_t routeData[254];
+	cats_route_hop_t hops[10]; // Only 10 stations supported... please find a better way to do this...
 } cats_route_whisker_t;
 
 typedef struct cats_destination_whisker {
