@@ -54,17 +54,19 @@ int cats_whisker_encode(cats_whisker_t* whisker, uint8_t* dataOut)
 
         case WHISKER_TYPE_ROUTE:
             memcpy(&out[2], &data->route.maxDigipeats, sizeof(uint8_t));
-            if(whisker->len > 1) { // We have callsigns in the route
+            out[1] = 1;
+            if(data->route.numHops >= 1) { // We have callsigns in the route
                 int rtIdx = 3;
-                for(int i = 0; i < 10; i++) {
-                    if(data->route.hops[i].callsign[0] == 0xFF)
-                        continue;
+                for(int i = 0; i < data->route.numHops; i++) {
                     strcpy(&out[rtIdx], data->route.hops[i].callsign);
                     rtIdx += strlen(data->route.hops[i].callsign);
                     memset(&out[rtIdx++], data->route.hops[i].hopType, 1);
                     memset(&out[rtIdx++], data->route.hops[i].ssid, 1);
-                    if(data->route.hops[i].hopType != CATS_ROUTE_FUTURE)
+                    if(data->route.hops[i].hopType != CATS_ROUTE_FUTURE) {
                         memset(&out[rtIdx++], data->route.hops[i].rssi, 1);
+                        out[1]++;
+                    }
+                    out[1] += strlen(data->route.hops[i].callsign)+2;
                 }
             }
         break;
@@ -159,7 +161,7 @@ int cats_whisker_decode(cats_whisker_t* whiskerOut, uint8_t* data)
                         beg++;
                     }
                     whiskerData->route.hops[rtIdx].hopType = data[del];
-                
+                    whiskerData->route.numHops++;
                     rtIdx++;
                 }
             }
@@ -199,6 +201,18 @@ int cats_whisker_decode(cats_whisker_t* whiskerOut, uint8_t* data)
     }
 
     memcpy(whiskerOut, &out, sizeof(cats_whisker_t));
+    return CATS_SUCCESS;
+}
+
+int cats_route_add_hop(cats_route_whisker_t* route, char* callsign, uint8_t ssid, uint8_t rssi, uint8_t type)
+{
+    cats_route_hop_t* hop = &route->hops[route->numHops];
+    strcpy(hop->callsign, callsign);
+    hop->ssid = ssid;
+    hop->rssi = rssi;
+    hop->hopType = type;
+    route->numHops++;
+
     return CATS_SUCCESS;
 }
 

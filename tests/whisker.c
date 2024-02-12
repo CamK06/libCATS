@@ -134,14 +134,14 @@ void test_route()
 
     cats_route_whisker_t data;
     data.maxDigipeats = 3;
-    for(int i = 0; i < 10; i++)
-        memset(data.hops[i].callsign, 0xFF, 16);
     memcpy(&data.hops[0], &hop1, sizeof(cats_route_hop_t));
     memcpy(&data.hops[1], &hop2, sizeof(cats_route_hop_t));
+    data.numHops = 2;
+    
+    cats_route_add_hop(&data, "VE3KCN", 1, 0, CATS_ROUTE_PAST);
 
     cats_whisker_t* whisker = malloc(sizeof(cats_whisker_t));
     whisker->type = WHISKER_TYPE_ROUTE;
-    whisker->len = sizeof(cats_route_hop_t)+1;
     whisker->data.route = data;
 
     uint8_t buf[whisker->len+2];
@@ -163,6 +163,10 @@ void test_route()
     assert(data.hops[1].hopType == 0XFE);
     assert(data.hops[1].rssi == 0x00);
     assert(data.hops[1].ssid == 15);
+    assert(strcmp(data.hops[2].callsign, "VE3KCN") == 0);
+    assert(data.hops[2].hopType == CATS_ROUTE_PAST);
+    assert(data.hops[2].rssi == 0x00);
+    assert(data.hops[2].ssid == 1);
 
     free(whisker);
 }
