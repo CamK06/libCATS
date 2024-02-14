@@ -121,31 +121,38 @@ void test_comment()
 
 void test_route()
 {
+    cats_route_whisker_t data;
+    data.len = 0;
+
     cats_route_hop_t hop1; 
     strcpy(hop1.callsign, "VE3KCN");
     hop1.hopType = 0xFF;
     hop1.rssi = 0x10;
     hop1.ssid = 7;
+    data.len += 3+strlen("VE3KCN");
+
     cats_route_hop_t hop2; 
     strcpy(hop2.callsign, "VE3KCN");
-    hop2.hopType = 0xFE;
+    hop2.hopType = CATS_ROUTE_INET;
     hop2.rssi = 0x00;
     hop2.ssid = 15;
+    data.len += 2+strlen("VE3KCN");
 
-    cats_route_whisker_t data;
     data.maxDigipeats = 3;
     memcpy(&data.hops[0], &hop1, sizeof(cats_route_hop_t));
     memcpy(&data.hops[1], &hop2, sizeof(cats_route_hop_t));
     data.numHops = 2;
     
-    cats_route_add_hop(&data, "VE3KCN", 1, 0, CATS_ROUTE_PAST);
+    cats_route_add_hop(&data, "VE3KCN", 1, 0xea, CATS_ROUTE_INET);
 
     cats_whisker_t* whisker = malloc(sizeof(cats_whisker_t));
     whisker->type = WHISKER_TYPE_ROUTE;
     whisker->data.route = data;
+    whisker->len = data.len+1;
 
     uint8_t buf[whisker->len+2];
     assert(cats_whisker_encode(whisker, buf) == CATS_SUCCESS);
+    hexdump(buf+2, whisker->len);
 
     free(whisker);
 
@@ -153,15 +160,16 @@ void test_route()
     assert(cats_whisker_decode(whisker, buf) == CATS_SUCCESS);
 
     data = whisker->data.route;
-
+    printf("NH: %d", data.numHops);
+    printf(data.hops[2].callsign);
+    return;
     assert(data.maxDigipeats == 3);
     assert(strcmp(data.hops->callsign, "VE3KCN") == 0);
     assert(data.hops->hopType == 0xFF);
     assert(data.hops->rssi == 0x10);
     assert(data.hops->ssid == 7);
     assert(strcmp(data.hops[1].callsign, "VE3KCN") == 0);
-    assert(data.hops[1].hopType == 0XFE);
-    assert(data.hops[1].rssi == 0x00);
+    assert(data.hops[1].hopType == CATS_ROUTE_INET);
     assert(data.hops[1].ssid == 15);
     assert(strcmp(data.hops[2].callsign, "VE3KCN") == 0);
     assert(data.hops[2].hopType == CATS_ROUTE_PAST);

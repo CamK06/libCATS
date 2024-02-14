@@ -54,7 +54,6 @@ int cats_whisker_encode(cats_whisker_t* whisker, uint8_t* dataOut)
 
         case WHISKER_TYPE_ROUTE:
             memcpy(&out[2], &data->route.maxDigipeats, sizeof(uint8_t));
-            out[1] = 1;
             if(data->route.numHops >= 1) { // We have callsigns in the route
                 int rtIdx = 3;
                 for(int i = 0; i < data->route.numHops; i++) {
@@ -62,11 +61,8 @@ int cats_whisker_encode(cats_whisker_t* whisker, uint8_t* dataOut)
                     rtIdx += strlen(data->route.hops[i].callsign);
                     memset(&out[rtIdx++], data->route.hops[i].hopType, 1);
                     memset(&out[rtIdx++], data->route.hops[i].ssid, 1);
-                    if(data->route.hops[i].hopType != CATS_ROUTE_FUTURE) {
+                    if(data->route.hops[i].hopType == CATS_ROUTE_PAST)
                         memset(&out[rtIdx++], data->route.hops[i].rssi, 1);
-                        out[1]++;
-                    }
-                    out[1] += strlen(data->route.hops[i].callsign)+2;
                 }
             }
         break;
@@ -149,14 +145,14 @@ int cats_whisker_decode(cats_whisker_t* whiskerOut, uint8_t* data)
             int rtIdx = 0;
             int del = 0;
             int beg = 3;
-            for(int i = 3; i < out.len; i++) {
+            for(int i = 3; i < out.len+2; i++) {
                 if(data[i] == CATS_ROUTE_FUTURE || data[i] == CATS_ROUTE_INET
                 || data[i] == CATS_ROUTE_PAST) {
                     del = i;
                     memcpy(whiskerData->route.hops[rtIdx].callsign, &data[beg], del-beg);
                     beg = del+2;
                     whiskerData->route.hops[rtIdx].ssid = data[del+1];
-                    if(data[i] != CATS_ROUTE_FUTURE) {
+                    if(data[del] == CATS_ROUTE_PAST) {
                         whiskerData->route.hops[rtIdx].rssi = data[del+2];
                         beg++;
                     }
@@ -207,10 +203,14 @@ int cats_whisker_decode(cats_whisker_t* whiskerOut, uint8_t* data)
 int cats_route_add_hop(cats_route_whisker_t* route, char* callsign, uint8_t ssid, uint8_t rssi, uint8_t type)
 {
     cats_route_hop_t* hop = &route->hops[route->numHops];
+    memset(hop, 0x00, sizeof(cats_route_hop_t));
     strcpy(hop->callsign, callsign);
     hop->ssid = ssid;
     hop->rssi = rssi;
     hop->hopType = type;
+    route->len += 2+strlen(callsign);
+    if(hop->hopType == CATS_ROUTE_PAST)
+        route->len++;
     route->numHops++;
 
     return CATS_SUCCESS;

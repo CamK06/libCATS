@@ -88,9 +88,12 @@ int cats_packet_add_gps(cats_packet_t* pkt, double lat, double lon, float alt, u
 	return cats_packet_add_whisker_data(pkt, WHISKER_TYPE_GPS, (cats_whisker_data_t*)&gps, cats_whisker_base_len(WHISKER_TYPE_GPS));
 }
 
-int cats_packet_add_route()
+int cats_packet_add_route(cats_packet_t* pkt, cats_route_whisker_t route)
 {
-	// TODO
+	if(pkt->len+2+cats_whisker_base_len(WHISKER_TYPE_ROUTE) > CATS_MAX_PKT_LEN)
+		throw(PACKET_TOO_BIG);
+	
+	return cats_packet_add_whisker_data(pkt, WHISKER_TYPE_ROUTE, (cats_whisker_data_t*)&route, cats_whisker_base_len(WHISKER_TYPE_DESTINATION)+route.len);
 }
 
 int cats_packet_add_destination(cats_packet_t* pkt, uint8_t* callsign, uint8_t ssid, uint8_t ack)
@@ -235,9 +238,17 @@ int cats_packet_get_gps(cats_packet_t* pkt, cats_gps_whisker_t** out)
 	return CATS_SUCCESS;
 }
 
-int cats_packet_get_route()
+int cats_packet_get_route(cats_packet_t* pkt, cats_route_whisker_t** out)
 {
-	// TODO
+	cats_whisker_t** r = cats_packet_find_whiskers(pkt, WHISKER_TYPE_ROUTE);
+	if(r <= CATS_FAIL)
+		throw_msg(WHISKER_NOT_FOUND, "cats_packet_get_route: packet has no route whiskers!");
+	cats_whisker_t* whisker = *r;
+	free(r);
+	
+	*out = &whisker->data.route;
+
+	return CATS_SUCCESS;
 }
 
 int cats_packet_get_destination(cats_packet_t* pkt, cats_destination_whisker_t** out)

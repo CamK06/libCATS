@@ -62,6 +62,7 @@ typedef struct cats_route_whisker {
 	uint8_t maxDigipeats;
 	cats_route_hop_t hops[10]; // Only 10 stations supported... please find a better way to do this...
 	uint8_t numHops;
+	uint8_t len;
 } cats_route_whisker_t;
 
 typedef struct cats_destination_whisker {
