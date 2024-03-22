@@ -57,6 +57,10 @@ int cats_whisker_encode(cats_whisker_t* whisker, uint8_t* dataOut)
             if(data->route.numHops >= 1) { // We have callsigns in the route
                 int rtIdx = 3;
                 for(int i = 0; i < data->route.numHops; i++) {
+                    if(data->route.hops[i].hopType == CATS_ROUTE_INET) {
+                        memset(&out[rtIdx++], CATS_ROUTE_INET, 1);
+                        continue;
+                    }
                     strcpy(&out[rtIdx], data->route.hops[i].callsign);
                     rtIdx += strlen(data->route.hops[i].callsign);
                     memset(&out[rtIdx++], data->route.hops[i].hopType, 1);
@@ -64,6 +68,8 @@ int cats_whisker_encode(cats_whisker_t* whisker, uint8_t* dataOut)
                     if(data->route.hops[i].hopType == CATS_ROUTE_PAST)
                         memset(&out[rtIdx++], data->route.hops[i].rssi, 1);
                 }
+                out[1] = rtIdx-2;
+                whisker->len = rtIdx-2;
             }
         break;
 
@@ -146,8 +152,7 @@ int cats_whisker_decode(cats_whisker_t* whiskerOut, uint8_t* data)
             int del = 0;
             int beg = 3;
             for(int i = 3; i < out.len+2; i++) {
-                if(data[i] == CATS_ROUTE_FUTURE || data[i] == CATS_ROUTE_INET
-                || data[i] == CATS_ROUTE_PAST) {
+                if(data[i] == CATS_ROUTE_FUTURE || data[i] == CATS_ROUTE_PAST) {
                     del = i;
                     memcpy(whiskerData->route.hops[rtIdx].callsign, &data[beg], del-beg);
                     beg = del+2;
@@ -159,6 +164,13 @@ int cats_whisker_decode(cats_whisker_t* whiskerOut, uint8_t* data)
                     whiskerData->route.hops[rtIdx].hopType = data[del];
                     whiskerData->route.numHops++;
                     rtIdx++;
+                }
+                else if(data[i] == CATS_ROUTE_INET) {
+                    del = i;
+                    whiskerData->route.hops[rtIdx].hopType = CATS_ROUTE_INET;
+                    beg++;
+                    rtIdx++;
+                    whiskerData->route.numHops++;
                 }
             }
         break;

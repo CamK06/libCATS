@@ -121,60 +121,45 @@ void test_comment()
 
 void test_route()
 {
+    // For some reason merely having this array causes a segfault
+    // TODO: Fix this so that part of the test can be implemented
+    //uint8_t expect[] = { 0x04, 0x1b, 0x03, 0x56, 0x45, 0x33, 0x4b, 0x43, 0x4e, 0xff, 0x07, 0x10, 0x56, 0x45, 0x32, 0x44,
+    //                     0x45, 0x46, 0xfd, 0xea, 0x56, 0x45, 0x33, 0x58, 0x59, 0x5a, 0xfd, 0x0e, 0xfe};
     cats_route_whisker_t data;
-    data.len = 0;
-
-    cats_route_hop_t hop1; 
-    strcpy(hop1.callsign, "VE3KCN");
-    hop1.hopType = 0xFF;
-    hop1.rssi = 0x10;
-    hop1.ssid = 7;
-    data.len += 3+strlen("VE3KCN");
-
-    cats_route_hop_t hop2; 
-    strcpy(hop2.callsign, "VE3KCN");
-    hop2.hopType = CATS_ROUTE_INET;
-    hop2.rssi = 0x00;
-    hop2.ssid = 15;
-    data.len += 2+strlen("VE3KCN");
-
     data.maxDigipeats = 3;
-    memcpy(&data.hops[0], &hop1, sizeof(cats_route_hop_t));
-    memcpy(&data.hops[1], &hop2, sizeof(cats_route_hop_t));
-    data.numHops = 2;
-    
-    cats_route_add_hop(&data, "VE3KCN", 1, 0xea, CATS_ROUTE_INET);
+
+    cats_route_add_hop(&data, "VE3KCN", 7, 0x10, CATS_ROUTE_PAST);
+    cats_route_add_hop(&data, "VE2DEF", 234, 0, CATS_ROUTE_FUTURE);
+    cats_route_add_hop(&data, "VE3XYZ", 14, 0, CATS_ROUTE_FUTURE);
+    cats_route_add_hop(&data, "", 0, 0, CATS_ROUTE_INET);
 
     cats_whisker_t* whisker = malloc(sizeof(cats_whisker_t));
     whisker->type = WHISKER_TYPE_ROUTE;
     whisker->data.route = data;
-    whisker->len = data.len+1;
+    whisker->len = data.len;
 
     uint8_t buf[whisker->len+2];
     assert(cats_whisker_encode(whisker, buf) == CATS_SUCCESS);
-    hexdump(buf+2, whisker->len);
-
     free(whisker);
 
     whisker = malloc(sizeof(cats_whisker_t));
     assert(cats_whisker_decode(whisker, buf) == CATS_SUCCESS);
 
     data = whisker->data.route;
-    printf("NH: %d", data.numHops);
-    printf(data.hops[2].callsign);
-    return;
     assert(data.maxDigipeats == 3);
     assert(strcmp(data.hops->callsign, "VE3KCN") == 0);
     assert(data.hops->hopType == 0xFF);
     assert(data.hops->rssi == 0x10);
     assert(data.hops->ssid == 7);
-    assert(strcmp(data.hops[1].callsign, "VE3KCN") == 0);
-    assert(data.hops[1].hopType == CATS_ROUTE_INET);
-    assert(data.hops[1].ssid == 15);
-    assert(strcmp(data.hops[2].callsign, "VE3KCN") == 0);
-    assert(data.hops[2].hopType == CATS_ROUTE_PAST);
+    assert(strcmp(data.hops[1].callsign, "VE2DEF") == 0);
+    assert(data.hops[1].hopType == CATS_ROUTE_FUTURE);
+    assert(data.hops[1].ssid == 234);
+    assert(strcmp(data.hops[2].callsign, "VE3XYZ") == 0);
+    assert(data.hops[2].hopType == CATS_ROUTE_FUTURE);
     assert(data.hops[2].rssi == 0x00);
-    assert(data.hops[2].ssid == 1);
+    assert(data.hops[2].ssid == 14);
+    assert(data.hops[3].hopType == CATS_ROUTE_INET);
+    //assert(memcmp(buf, expect, whisker->len) == 0);
 
     free(whisker);
 }
