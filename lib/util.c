@@ -31,40 +31,40 @@ void uint64_to_5byte(uint64_t value, uint8_t* result) {
 
 int32_t lat_to_int32(double lat)
 {
-    return (int32_t)(lat * (float)(1 << 31) / 90);
+    return -(int32_t)(lat * (float)(1 << 31) / 90);
 }
 
 int32_t lon_to_int32(double lon)
 {
-    return (int32_t)(lon * (float)(1 << 31) / 180);
+    return -(int32_t)(lon * (float)(1 << 31) / 180);
 }
 
 double int32_to_lat(int32_t lat)
 {
-    return (double)lat / (float)(1 << 31) * 90;
+    return -(double)lat / (float)(1 << 31) * 90;
 }
 
 double int32_to_lon(int32_t lon)
 {
-    return (double)lon / (float)(1 << 31) * 180;
+    return -(double)lon / (float)(1 << 31) * 180;
 }
 
 int16_t lat_to_int16(double lat)
 {
-    return (int16_t)(lat * (float)(1 << 15) / 90);
+    return -(int16_t)(lat * (float)(1 << 15) / 90);
 }
 
 int16_t lon_to_int16(double lon)
 {
-    return (int16_t)(lon * (float)(1 << 15) / 180);
+    return -(int16_t)(lon * (float)(1 << 15) / 180);
 }
 
 double int16_to_lat(int16_t lat)
 {
-    return (double)lat / (float)(1 << 15) * 90;
+    return -(double)lat / (float)(1 << 15) * 90;
 }
 
 double int16_to_lon(int16_t lon)
 {
-    return (double)lon / (float)(1 << 15) * 180;
+    return -(double)lon / (float)(1 << 15) * 180;
 }

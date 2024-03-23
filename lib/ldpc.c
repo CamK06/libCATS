@@ -25,13 +25,13 @@ int cats_ldpc_pick_code(int len)
 // Temporary: Will replace pick_code once decoding is implemented
 cats_ldpc_code_t* cats_ldpc_pick_code_2(int len)
 {
-    if(512 <= len)
+    if(len >= 512)
         return &tm8192;
-    else if(128 <= len)
+    else if(len >= 128)
         return &tm2048;
-    else if(32 <= len)
+    else if(len >= 32)
         return &tc512;
-    else if(16 <= len)
+    else if(len >= 16)
         return &tc256;
     else
         return &tc128;

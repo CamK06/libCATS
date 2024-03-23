@@ -126,6 +126,8 @@ void test_route()
                          0x45, 0x46, 0xfd, 0xea, 0x56, 0x45, 0x33, 0x58, 0x59, 0x5a, 0xfd, 0x0e, 0xfe};
     cats_route_whisker_t data;
     data.maxDigipeats = 3;
+    data.len = 0;
+    data.numHops = 0;
 
     cats_route_add_hop(&data, "VE3KCN", 7, 0x10, CATS_ROUTE_PAST);
     cats_route_add_hop(&data, "VE2DEF", 234, 0, CATS_ROUTE_FUTURE);
@@ -248,8 +250,8 @@ void test_repeater()
     data = whisker->data.repeater;
     assert(data.downlink == 146520000);
     assert(data.uplink == 147520000);
-    //assert(fabs(data.latitude-1) < 0.0000001);
-    //assert(fabs(data.longitude-2) < 0.0000001);
+    assert(fabs(data.latitude-1) < 0.001);
+    assert(fabs(data.longitude-2) < 0.001);
     assert(data.modulation == 1);
     assert(data.power == 200);
     assert(data.tone == 1);
@@ -260,13 +262,13 @@ void test_repeater()
 
 int main()
 {
-    //test_identification();
-    //test_timestamp();
-    //test_gps();
+    test_identification();
+    test_timestamp();
+    test_gps();
     test_comment();
     test_route();
-    //test_destination();
-    //test_simplex();
-    //test_repeater();
+    test_destination();
+    test_simplex();
+    test_repeater();
     return 0;
 }

@@ -54,7 +54,7 @@ void test_encode_decode()
     //cats_packet_add_route();
     int len = cats_packet_build(pkt, &buf);
     assert(len > 0);
-    free(pkt);
+    cats_packet_destroy(&pkt);
 
     // Decode the test packet
     cats_packet_prepare(&pkt);
@@ -105,7 +105,7 @@ void test_encode_decode()
     assert(data->simplex.modulation == MOD_FM);
     assert(data->simplex.power == 5);
 
-    free(pkt);
+    cats_packet_destroy(&pkt);
     free(buf);
 }
 

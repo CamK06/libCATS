@@ -20,6 +20,7 @@ pkt MUST NOT already be allocated, otherwise it will leak memory
 */
 int cats_packet_prepare(cats_packet_t** pkt);
 
+int cats_packet_destroy(cats_packet_t** pkt);
 
 /*
 Build a cats_packet_t into a CATS packet for TX

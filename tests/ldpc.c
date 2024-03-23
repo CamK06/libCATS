@@ -14,7 +14,7 @@ and that padding (as is specific to CATS for variable length packets) chunks of 
 
 void test_len()
 {
-    uint8_t* buf = malloc(8191);
+    uint8_t* buf = calloc(8191, 1);
     int len = 0;
     for(int i = 0; i < 41; i++) {
         len = i*56;
@@ -32,8 +32,8 @@ void test_len()
 
 void test_encode_decode_short()
 {
-    uint8_t* buf = malloc(32);
-    uint8_t* orig = malloc(32);
+    uint8_t* buf = calloc(32, 1);
+    uint8_t* orig = calloc(32, 1);
     strcpy(orig, "Hello world!");
     strcpy(buf, orig);
 
@@ -48,8 +48,8 @@ void test_encode_decode_short()
 
 void test_encode_decode()
 {
-    uint8_t* buf = malloc(8191);
-    uint8_t* orig = malloc(8191);
+    uint8_t* buf = calloc(8191, 1);
+    uint8_t* orig = calloc(8191, 1);
     for(int i = 0; i < 50; i++)
         strcpy(orig+i*58, "This is a test packet. jsalksjd093809324JASLD:LKD*#$)(*#@)");
     strcpy(buf, orig);
@@ -65,8 +65,8 @@ void test_encode_decode()
 
 void test_encode_decode_bit_flips()
 {
-    uint8_t* buf = malloc(8191);
-    uint8_t* orig = malloc(8191);
+    uint8_t* buf = calloc(8191, 1);
+    uint8_t* orig = calloc(8191, 1);
     for(int i = 0; i < 50; i++)
         strcpy(orig+i*55, "jsalksjd093809324JASLD:LKD*#$)(*#@) Another test packet");
     strcpy(buf, orig);

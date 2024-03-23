@@ -21,6 +21,16 @@ int cats_packet_prepare(cats_packet_t** pkt)
 	return CATS_SUCCESS;
 }
 
+int cats_packet_destroy(cats_packet_t** pkt)
+{
+	if((*pkt) == NULL)
+		return CATS_SUCCESS;
+
+	free((*pkt)->whiskers);
+	free(*pkt);
+	return CATS_SUCCESS;
+}
+
 uint16_t cats_packet_build(cats_packet_t* pkt, uint8_t** out)
 {
 	if(*out == NULL)
@@ -93,7 +103,7 @@ int cats_packet_add_route(cats_packet_t* pkt, cats_route_whisker_t route)
 	if(pkt->len+2+cats_whisker_base_len(WHISKER_TYPE_ROUTE) > CATS_MAX_PKT_LEN)
 		throw(PACKET_TOO_BIG);
 	
-	return cats_packet_add_whisker_data(pkt, WHISKER_TYPE_ROUTE, (cats_whisker_data_t*)&route, cats_whisker_base_len(WHISKER_TYPE_DESTINATION)+route.len);
+	return cats_packet_add_whisker_data(pkt, WHISKER_TYPE_ROUTE, (cats_whisker_data_t*)&route, cats_whisker_base_len(WHISKER_TYPE_ROUTE)+route.len);
 }
 
 int cats_packet_add_destination(cats_packet_t* pkt, uint8_t* callsign, uint8_t ssid, uint8_t ack)
@@ -344,7 +354,7 @@ int cats_packet_decode(uint8_t* data, int len, cats_whisker_t** whiskersOut)
 	cats_whiten(pkt, pktLen);
 
 	uint16_t crcActual = cats_crc16(pkt, pktLen-2);
-	uint16_t crcExpect = *(uint16_t*)&pkt[pktLen-2]; // Is this okay practice? Probably should use memcpy...
+	uint16_t crcExpect = (pkt[pktLen-1] << 8) | pkt[pktLen-2];
 	if(crcActual != crcExpect)
 		throw(INVALID_CRC);
 
