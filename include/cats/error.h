@@ -19,12 +19,12 @@ typedef enum {
     LDPC_DECODE_FAIL,
     INVALID_CRC,
     WHISKER_NOT_FOUND
-} cats_error_t;
+} CATSError;
 
-extern cats_error_t cats_error; // Most recent error thrown by libCATS
+extern CATSError cats_error; // Most recent error thrown by libCATS
 extern char cats_error_str[255]; // Error string for the most recent error thrown by libCATS
 
 // Not to be used directly; use throw() instead
-void cats_throw_err(cats_error_t error, const char* msg);
+void cats_throw_err(CATSError error, const char* msg);
 
 #endif
