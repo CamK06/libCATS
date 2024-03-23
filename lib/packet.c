@@ -329,13 +329,12 @@ int cats_packet_encode(cats_whisker_t* whiskers, int whiskerCount, uint8_t** dat
 
 	cats_whiten(out, len);
 	len = cats_ldpc_encode(&out, len);
-	cats_interleave(out, len);
 	
 	uint8_t* tmp = realloc(*dataOut, len);
 	if(tmp == NULL)
 		throw(MALLOC_FAIL);
 	*dataOut = tmp;
-	memcpy(*dataOut, out, len);
+	cats_interleave(*dataOut, out, len);
 	free(out);
 	
 	return len;
@@ -345,9 +344,8 @@ int cats_packet_decode(uint8_t* data, int len, cats_whisker_t** whiskersOut)
 {	
 	int pktLen = len;
 	uint8_t* pkt = malloc(pktLen);
-	memcpy(pkt, data, pktLen);
 
-	cats_deinterleave(pkt, pktLen);
+	cats_deinterleave(pkt, data, pktLen);
 	pktLen = cats_ldpc_decode(&pkt, pktLen);
 	if(pktLen < 0)
 		throw(LDPC_DECODE_FAIL);

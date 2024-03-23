@@ -2,12 +2,9 @@
 #define CATS_INTERLEAVER_H
 
 #include <stdint.h>
+#include <stddef.h>
 
-// 32-block interleaver
-// data is both input and output
-void cats_interleave(uint8_t* data, int len);
-// 32-block deinterleaver
-// data is both input and output
-void cats_deinterleave(uint8_t* data, int len);
+void cats_interleave(uint8_t* dest, const uint8_t* src, size_t len);
+void cats_deinterleave(uint8_t* dest, const uint8_t* src, size_t len);
 
 #endif
