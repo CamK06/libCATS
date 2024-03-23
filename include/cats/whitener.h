@@ -2,11 +2,8 @@
 #define CATS_WHITENER_H
 
 #include <stdint.h>
+#include <stddef.h>
 
-#define LFSR_START_STATE 0xE9CF
-
-uint8_t cats_lfsr(uint16_t* state);
-uint8_t cats_lfsr_byte(uint16_t* state);
-void cats_whiten(uint8_t* data, int len);
+void cats_whiten(uint8_t* data, size_t len);
 
 #endif
