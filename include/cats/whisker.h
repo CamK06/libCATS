@@ -19,6 +19,7 @@ typedef enum cats_whisker_type {
 	WHISKER_TYPE_REPEATER,
 	WHISKER_TYPE_NODEINFO
 } cats_whisker_type_t;
+#define CATS_NUM_WHISKER_TYPES 10
 
 typedef enum cats_modulation {
 	MOD_UNK,
@@ -111,26 +112,13 @@ typedef struct cats_whisker {
 	cats_whisker_data_t data;
 } cats_whisker_t;
 
-/*
-Encode a whisker from cats_whisker_t
+int cats_whisker_encode(const cats_whisker_t* whisker, uint8_t* out);
+int cats_whisker_decode(const uint8_t* data, cats_whisker_t* out);
+int cats_whisker_base_len(const cats_whisker_type_t type);
 
-dataOut must already be allocated
-*/
-int cats_whisker_encode(cats_whisker_t* whisker, uint8_t* dataOut);
-
-/*
-Decodes a whisker from its raw bytes to its appropriate type
-
-whisker must already be allocated
-*/
-int cats_whisker_decode(cats_whisker_t* whiskerOut, uint8_t* data);
-
-int cats_whisker_base_len(cats_whisker_type_t type);
-
-void cats_route_destroy(cats_route_whisker_t* route);
+cats_route_hop_t* cats_route_add_hop(cats_route_whisker_t* route, const char* callsign, uint8_t ssid, uint8_t rssi, uint8_t type);
 cats_route_hop_t* cats_route_append_hop(cats_route_whisker_t* route);
 cats_route_hop_t* cats_route_new_hop();
-
-int cats_route_add_hop(cats_route_whisker_t* route, const char* callsign, uint8_t ssid, uint8_t rssi, uint8_t type);
+void cats_route_destroy(cats_route_whisker_t* route);
 
 #endif

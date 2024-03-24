@@ -365,7 +365,7 @@ int cats_packet_decode(uint8_t* data, int len, cats_whisker_t** whiskersOut)
 		cats_whisker_t* whiskers = malloc(numWhiskers * sizeof(cats_whisker_t));
 		int idx = 0;
 		for(int i = 0; i < numWhiskers; i++) {
-			cats_whisker_decode(&whiskers[i], &pkt[idx]);
+			cats_whisker_decode(&pkt[idx], &whiskers[i]);
 			idx += whiskers[i].len+2;
 		}
 		*whiskersOut = whiskers;

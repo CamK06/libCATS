@@ -32,7 +32,7 @@ void test_identification()
     free(whisker);
 
     whisker = malloc(sizeof(cats_whisker_t));
-    assert(cats_whisker_decode(whisker, buf) == CATS_SUCCESS);
+    assert(cats_whisker_decode(buf, whisker) == CATS_SUCCESS);
 
     data = whisker->data.identification;
     assert(strcmp(data.callsign, "VE3KCN") == 0);
@@ -56,7 +56,7 @@ void test_timestamp()
     free(whisker);
 
     whisker = malloc(sizeof(cats_whisker_t));
-    assert(cats_whisker_decode(whisker, buf) == CATS_SUCCESS);
+    assert(cats_whisker_decode(buf, whisker) == CATS_SUCCESS);
 
     uint64_t decodedTime = 0;
     memcpy(&decodedTime, whisker->data.raw, 5);
@@ -86,7 +86,7 @@ void test_gps()
     free(whisker);
 
     whisker = malloc(sizeof(cats_whisker_t));
-    assert(cats_whisker_decode(whisker, buf) == CATS_SUCCESS);
+    assert(cats_whisker_decode(buf, whisker) == CATS_SUCCESS);
 
     data = whisker->data.gps;
     assert(fabs(data.altitude-50.3f) <= 0.05f);
@@ -113,7 +113,7 @@ void test_comment()
     free(whisker);
 
     whisker = malloc(sizeof(cats_whisker_t));
-    assert(cats_whisker_decode(whisker, buf) == CATS_SUCCESS);
+    assert(cats_whisker_decode(buf, whisker) == CATS_SUCCESS);
     assert(strcmp(whisker->data.raw, text) == 0);
 
     free(whisker);
@@ -146,7 +146,7 @@ void test_route()
     free(whisker);
 
     whisker = malloc(sizeof(cats_whisker_t));
-    assert(cats_whisker_decode(whisker, buf) == CATS_SUCCESS);
+    assert(cats_whisker_decode(buf, whisker) == CATS_SUCCESS);
 
     data = whisker->data.route;
     cats_route_hop_t* hop = &(data.hops);
@@ -197,7 +197,7 @@ void test_destination()
     free(whisker);
 
     whisker = malloc(sizeof(cats_whisker_t));
-    assert(cats_whisker_decode(whisker, buf) == CATS_SUCCESS);
+    assert(cats_whisker_decode(buf, whisker) == CATS_SUCCESS);
 
     data = whisker->data.destination;
     assert(data.ack == 0xea);
@@ -225,7 +225,7 @@ void test_simplex()
     free(whisker);
 
     whisker = malloc(sizeof(cats_whisker_t));
-    assert(cats_whisker_decode(whisker, buf) == CATS_SUCCESS);
+    assert(cats_whisker_decode(buf, whisker) == CATS_SUCCESS);
 
     data = whisker->data.simplex;
     assert(data.frequency == 146520000);
@@ -258,7 +258,7 @@ void test_repeater()
     free(whisker);
 
     whisker = malloc(sizeof(cats_whisker_t));
-    assert(cats_whisker_decode(whisker, buf) == CATS_SUCCESS);
+    assert(cats_whisker_decode(buf, whisker) == CATS_SUCCESS);
 
     data = whisker->data.repeater;
     assert(data.downlink == 146520000);

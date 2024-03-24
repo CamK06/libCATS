@@ -1,8 +1,10 @@
 #include "cats/whisker.h"
+#include "cats/error.h"
 
 #include <stddef.h>
+#include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
+#include <assert.h>
 
 size_t cats_route_encode(const cats_whisker_data_t* data, uint8_t* dest)
 {
@@ -49,7 +51,7 @@ void cats_route_decode(const uint8_t* data, size_t len, cats_whisker_data_t* des
             
             if(hop->hopType != CATS_ROUTE_INET) {
                 memcpy(hop->callsign, &data[begin], delim - begin);
-                begin = delim + 2;
+                begin = delim + 2; // Skip over SSID and delimiter itself
                 hop->ssid = data[delim + 1];
                 route->len += strlen(hop->callsign) + 1;
                 if(data[delim] == CATS_ROUTE_PAST) {
@@ -59,8 +61,73 @@ void cats_route_decode(const uint8_t* data, size_t len, cats_whisker_data_t* des
                 }
             }
             else if(hop->hopType == CATS_ROUTE_INET) {
-                begin++;
+                begin = delim + 1; // This *might* need to be begin++
             }
         }
     }
+}
+
+void cats_route_destroy(cats_route_whisker_t* route)
+{
+    cats_route_hop_t* hop = route->hops.next;
+    while(hop != NULL) {
+        cats_route_hop_t* prev = hop;
+        hop = hop->next;
+        free(prev);
+    }
+    route->hops.next = NULL;
+}
+
+cats_route_hop_t* cats_route_append_hop(cats_route_whisker_t* route)
+{
+    cats_route_hop_t* hop = &(route->hops);
+    assert(hop != NULL);
+
+    if(route->numHops != 0) {
+        while(hop->next != NULL) {
+            hop = hop->next;
+        }
+        hop->next = cats_route_new_hop();
+        hop = hop->next;
+    }
+    route->numHops++;
+    route->len++;
+
+    assert(hop != NULL);
+    return hop;
+}
+
+cats_route_hop_t* cats_route_new_hop()
+{
+    cats_route_hop_t* hop = calloc(sizeof(cats_route_hop_t), 1);
+    if(hop == NULL) {
+        throw(MALLOC_FAIL);
+    }
+
+    hop->hopType = 0;
+    hop->rssi = 0;
+    hop->ssid = 0;
+    hop->next = NULL;
+
+    return hop;
+}
+
+cats_route_hop_t* cats_route_add_hop(cats_route_whisker_t* route, const char* callsign, uint8_t ssid, uint8_t rssi, uint8_t type)
+{
+    cats_route_hop_t* hop = cats_route_append_hop(route);
+    assert(hop != NULL);
+
+    hop->hopType = type;
+    hop->rssi = rssi;
+    hop->ssid = ssid;
+    strcpy(hop->callsign, callsign);
+
+    if(type != CATS_ROUTE_INET) {
+        route->len += 1 + strlen(callsign);
+    }
+    if(type == CATS_ROUTE_PAST) {
+        route->len++;
+    }
+
+    return hop;
 }
