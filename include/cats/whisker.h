@@ -56,11 +56,12 @@ typedef struct cats_route_hop {
 	uint8_t ssid;
 	uint8_t rssi;
 	uint8_t callsign[16];
+	struct cats_route_hop* next;
 } cats_route_hop_t;
 
 typedef struct cats_route_whisker {
 	uint8_t maxDigipeats;
-	cats_route_hop_t hops[10]; // Only 10 stations supported... please find a better way to do this...
+	cats_route_hop_t hops;
 	uint8_t numHops;
 	uint8_t len;
 } cats_route_whisker_t;
@@ -126,6 +127,10 @@ int cats_whisker_decode(cats_whisker_t* whiskerOut, uint8_t* data);
 
 int cats_whisker_base_len(cats_whisker_type_t type);
 
-int cats_route_add_hop(cats_route_whisker_t* route, char* callsign, uint8_t ssid, uint8_t rssi, uint8_t type);
+void cats_route_destroy(cats_route_whisker_t* route);
+cats_route_hop_t* cats_route_append_hop(cats_route_whisker_t* route);
+cats_route_hop_t* cats_route_new_hop();
+
+int cats_route_add_hop(cats_route_whisker_t* route, const char* callsign, uint8_t ssid, uint8_t rssi, uint8_t type);
 
 #endif
