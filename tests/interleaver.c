@@ -18,10 +18,10 @@ int main()
 	uint8_t orig[9];
 	memcpy(orig, buf, 9);
 	    
-    cats_interleave(buf, orig, 9);
+    cats_interleave(buf, 9);
 	assert(memcmp(buf, expect, 9) == 0);
 
-	cats_deinterleave(buf, expect, 9);
+	cats_deinterleave(buf, 9);
 	assert(memcmp(buf, orig, 9) == 0);
 
     return 0;

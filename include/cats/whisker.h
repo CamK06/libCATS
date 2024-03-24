@@ -114,6 +114,7 @@ typedef struct cats_whisker {
 	uint8_t type;
 	uint8_t len;
 	cats_whisker_data_t data;
+	struct cats_whisker* next;
 } cats_whisker_t;
 
 // Returns number of bytes written to out

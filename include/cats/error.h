@@ -18,7 +18,8 @@ typedef enum {
     INVALID_OR_NO_COMMENT,
     LDPC_DECODE_FAIL,
     INVALID_CRC,
-    WHISKER_NOT_FOUND
+    WHISKER_NOT_FOUND,
+    EMPTY_PACKET
 } CATSError;
 
 extern CATSError cats_error; // Most recent error thrown by libCATS
