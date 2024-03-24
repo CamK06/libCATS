@@ -5,8 +5,30 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <assert.h>
 
-uint8_t baseLengths[] = {
+typedef size_t (*whisker_encode_func_t)(const cats_whisker_data_t* data, uint8_t* dest);
+typedef void (*whisker_decode_func_t)(const uint8_t* data, size_t len, cats_whisker_data_t* dest);
+
+// Encoders
+extern size_t cats_ident_encode(const cats_whisker_data_t* data, uint8_t* dest);
+extern size_t cats_gps_encode(const cats_whisker_data_t* data, uint8_t* dest);
+extern size_t cats_route_encode(const cats_whisker_data_t* data, uint8_t* dest);
+extern size_t cats_dest_encode(const cats_whisker_data_t* data, uint8_t* dest);
+extern size_t cats_simplex_encode(const cats_whisker_data_t* data, uint8_t* dest);
+extern size_t cats_repeater_encode(const cats_whisker_data_t* data, uint8_t* dest);
+extern size_t cats_nodeinfo_encode(const cats_whisker_data_t* data, uint8_t* dest);
+
+// Decoders
+extern void cats_ident_decode(const uint8_t* data, size_t len, cats_whisker_data_t* dest);
+extern void cats_gps_decode(const uint8_t* data, size_t len, cats_whisker_data_t* dest);
+extern void cats_route_decode(const uint8_t* data, size_t len, cats_whisker_data_t* dest);
+extern void cats_dest_decode(const uint8_t* data, size_t len, cats_whisker_data_t* dest);
+extern void cats_simplex_decode(const uint8_t* data, size_t len, cats_whisker_data_t* dest);
+extern void cats_repeater_decode(const uint8_t* data, size_t len, cats_whisker_data_t* dest);
+extern void cats_nodeinfo_decode(const uint8_t* data, size_t len, cats_whisker_data_t* dest);
+
+static uint8_t baseLengths[] = {
     3,  // IDENTIFICATION
     5,  // TIMESTAMP
     14, // GPS
@@ -17,6 +39,32 @@ uint8_t baseLengths[] = {
     6,  // SIMPLEX
     17, // REPEATER
     3,  // NODEINFO
+};
+
+whisker_encode_func_t encoders[] = {
+    &cats_ident_encode,
+    NULL, // TIMESTAMP
+    &cats_gps_encode,
+    NULL, // COMMENT
+    &cats_route_encode,
+    &cats_dest_encode,
+    NULL, // ARBITRARY
+    &cats_simplex_encode,
+    &cats_repeater_encode,
+    &cats_nodeinfo_encode
+};
+
+whisker_decode_func_t decoders[] = {
+    &cats_ident_decode,
+    NULL, // TIMESTAMP
+    &cats_gps_decode,
+    NULL, // COMMENT
+    &cats_route_decode,
+    &cats_dest_decode,
+    NULL, // ARBITRARY
+    &cats_simplex_decode,
+    &cats_repeater_decode,
+    &cats_nodeinfo_decode
 };
 
 int cats_whisker_encode(cats_whisker_t* whisker, uint8_t* dataOut)
@@ -54,29 +102,8 @@ int cats_whisker_encode(cats_whisker_t* whisker, uint8_t* dataOut)
         break;
 
         case WHISKER_TYPE_ROUTE:
-            memcpy(&out[2], &data->route.maxDigipeats, sizeof(uint8_t));
-            if(data->route.numHops >= 1) { // We have callsigns in the route
-                int route_idx = 3;
-                cats_route_hop_t* hop = &(data->route.hops);
-                while(hop != NULL) {
-                    if(hop->hopType == CATS_ROUTE_INET) {
-                        out[route_idx++] = CATS_ROUTE_INET;
-                        hop = hop->next;
-                        continue;
-                    }
-                    strcpy(&out[route_idx], hop->callsign);
-                    route_idx += strlen(hop->callsign);
-                    out[route_idx++] = hop->hopType;
-                    out[route_idx++] = hop->ssid;
-                    if(hop->hopType == CATS_ROUTE_PAST)
-                        out[route_idx++] = hop->rssi;
-
-                    hop = hop->next;
-                }
-
-                out[1] = route_idx-2;
-                whisker->len = route_idx-2;
-            }
+            out[1] = encoders[WHISKER_TYPE_ROUTE](data, out);
+            whisker->len = out[1];
         break;
 
         case WHISKER_TYPE_DESTINATION:
@@ -153,32 +180,7 @@ int cats_whisker_decode(cats_whisker_t* whiskerOut, uint8_t* data)
         break;
 
         case WHISKER_TYPE_ROUTE:
-            memcpy(&whiskerData->route.maxDigipeats, &data[2], sizeof(uint8_t));
-            int route_index = 0;
-            int del = 0;
-            int beg = 3;
-            for(int i = 3; i < out.len+2; i++) {
-                if(data[i] == CATS_ROUTE_FUTURE || data[i] == CATS_ROUTE_PAST) {
-                    cats_route_hop_t* hop = cats_route_append_hop(&whiskerData->route);
-                    del = i;
-                    memcpy(hop->callsign, &data[beg], del-beg);
-                    beg = del+2;
-                    hop->ssid = data[del+1];
-                    if(data[del] == CATS_ROUTE_PAST) {
-                        hop->rssi = data[del+2];
-                        beg++;
-                    }
-                    hop->hopType = data[del];
-                    route_index++;
-                }
-                else if(data[i] == CATS_ROUTE_INET) {
-                    cats_route_hop_t* hop = cats_route_append_hop(&whiskerData->route);
-                    del = i;
-                    hop->hopType = CATS_ROUTE_INET;
-                    beg++;
-                    route_index++;
-                }
-            }
+            decoders[WHISKER_TYPE_ROUTE](data, out.len, whiskerData);
         break;
 
         case WHISKER_TYPE_DESTINATION:
@@ -240,6 +242,7 @@ cats_route_hop_t* cats_route_append_hop(cats_route_whisker_t* route)
         hop = hop->next;
     }
     route->numHops++;
+    route->len++;
     return hop;
 }
 
@@ -253,7 +256,6 @@ cats_route_hop_t* cats_route_new_hop()
     hop->rssi = 0;
     hop->ssid = 0;
     hop->next = NULL;
-    //memset(hop->callsign, 0x00, 16);
 }
 
 int cats_route_add_hop(cats_route_whisker_t* route, const char* callsign, uint8_t ssid, uint8_t rssi, uint8_t type)
@@ -265,11 +267,12 @@ int cats_route_add_hop(cats_route_whisker_t* route, const char* callsign, uint8_
     hop->next = NULL;
     strcpy(hop->callsign, callsign);
 
-    route->len += 2 + strlen(callsign);
+    if(type != CATS_ROUTE_INET) {
+        route->len += 1 + strlen(callsign);
+    }
     if(type == CATS_ROUTE_PAST) {
         route->len++;
     }
-    route->numHops++;
 
     return CATS_SUCCESS;
 }

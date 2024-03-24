@@ -138,7 +138,7 @@ void test_route()
     cats_whisker_t* whisker = malloc(sizeof(cats_whisker_t));
     whisker->type = WHISKER_TYPE_ROUTE;
     whisker->data.route = data;
-    whisker->len = data.len;
+    whisker->len = data.len+1;
 
     uint8_t* buf = malloc(whisker->len+2);
     assert(cats_whisker_encode(whisker, buf) == CATS_SUCCESS);
