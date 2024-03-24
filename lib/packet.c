@@ -31,11 +31,11 @@ int cats_packet_destroy(cats_packet_t** pkt)
 	return CATS_SUCCESS;
 }
 
-uint16_t cats_packet_build(cats_packet_t* pkt, uint8_t** out)
+uint16_t cats_packet_build(cats_packet_t* pkt, uint8_t* out)
 {
-	if(*out == NULL)
-		if((*out = malloc(pkt->len)) == NULL)
-			throw(MALLOC_FAIL);
+	// if(*out == NULL)
+	// 	if((*out = malloc(pkt->len)) == NULL)
+	// 		throw(MALLOC_FAIL);
 	
 	// TODO: Validate the packet before encoding (e.g. ensure only one ID whisker exists, packet isn't too long, etc)
 	return cats_packet_encode(pkt->whiskers, pkt->numWhiskers, out);
@@ -305,37 +305,35 @@ int cats_packet_get_node_info()
 	// TODO
 }
 
-int cats_packet_encode(cats_whisker_t* whiskers, int whiskerCount, uint8_t** dataOut)
+int cats_packet_encode(cats_whisker_t* whiskers, int whiskerCount, uint8_t* dataOut)
 {
 	int len = 0;
 	for(int i = 0; i < whiskerCount; i++)
 		len += whiskers[i].len+2;
-	uint8_t* out = malloc(len+2);
-	if(out == NULL)
-		throw(MALLOC_FAIL);
 
 	int written = 0;
 	for(int i = 0; i < whiskerCount; i++) {
 		int whiskerLen = whiskers[i].len+2;
 		uint8_t whisker[whiskerLen];
 		cats_whisker_encode(&(whiskers[i]), whisker);
-		memcpy(out+written, whisker, whiskerLen);
+		memcpy(dataOut+written, whisker, whiskerLen);
 		written += whiskerLen;
 	}
 
-	uint16_t crc = cats_crc16(out, len);
-	memcpy(out+len, &crc, sizeof(uint16_t));
+	uint16_t crc = cats_crc16(dataOut, len);
+	memcpy(dataOut+len, &crc, sizeof(uint16_t));
 	len += 2;
 
-	cats_whiten(out, len);
-	len = cats_ldpc_encode(&out, len);
+	cats_whiten(dataOut, len);
+	len = cats_ldpc_encode(dataOut, len);
 	
-	uint8_t* tmp = realloc(*dataOut, len);
+	uint8_t* tmp = malloc(len);
 	if(tmp == NULL)
 		throw(MALLOC_FAIL);
-	*dataOut = tmp;
-	cats_interleave(*dataOut, out, len);
-	free(out);
+	
+	cats_interleave(tmp, dataOut, len);
+	memcpy(dataOut, tmp, len);
+	free(tmp);
 	
 	return len;
 }
@@ -346,7 +344,7 @@ int cats_packet_decode(uint8_t* data, int len, cats_whisker_t** whiskersOut)
 	uint8_t* pkt = malloc(pktLen);
 
 	cats_deinterleave(pkt, data, pktLen);
-	pktLen = cats_ldpc_decode(&pkt, pktLen);
+	pktLen = cats_ldpc_decode(pkt, pktLen);
 	if(pktLen < 0)
 		throw(LDPC_DECODE_FAIL);
 	cats_whiten(pkt, pktLen);

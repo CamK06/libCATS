@@ -6,23 +6,23 @@
 
 // https://github.com/adamgreig/labrador-ldpc/blob/master/src/codes/compact_generators.rs
 
-typedef struct cats_ldpc_code {
-    // Code length (data+parity)
-    int n;
+typedef struct {
+    // Code length in bits (data+parity)
+    int code_length_bits;
     // Data length in bits
-    int k;
-    int puncturedBits;
-    int bfWorkingLen;
-    size_t circulantSize;
-    size_t matrixLen;
+    int data_length_bits;
+    int punctured_bits;
+    int bf_working_len;
+    size_t circulant_size;
+    size_t matrix_len;
     const uint64_t* matrix;
-} cats_ldpc_code_t;
+} cats_ldpc_code;
 
-extern cats_ldpc_code_t tc128;
-extern cats_ldpc_code_t tc256;
-extern cats_ldpc_code_t tc512;
-extern cats_ldpc_code_t tm2048;
-extern cats_ldpc_code_t tm8192;
+extern cats_ldpc_code tc128;
+extern cats_ldpc_code tc256;
+extern cats_ldpc_code tc512;
+extern cats_ldpc_code tm2048;
+extern cats_ldpc_code tm8192;
 
 extern const uint64_t tc128_matrix[];
 extern const uint64_t tc256_matrix[];

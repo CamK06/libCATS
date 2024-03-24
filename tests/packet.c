@@ -41,7 +41,7 @@ void test_decode()
 void test_encode_decode()
 {
     // Create a test packet
-    uint8_t* buf = NULL;
+    uint8_t* buf = calloc(CATS_MAX_PKT_LEN, 1);
     cats_packet_t* pkt;
     cats_packet_prepare(&pkt);
     cats_packet_add_identification(pkt, "VE3KCN", 7, 1);
@@ -52,7 +52,7 @@ void test_encode_decode()
     cats_packet_add_simplex(pkt, 14652000, MOD_FM, 5);
     //cats_packet_add_node_info();
     //cats_packet_add_route();
-    int len = cats_packet_build(pkt, &buf);
+    int len = cats_packet_build(pkt, buf);
     assert(len > 0);
     cats_packet_destroy(&pkt);
 

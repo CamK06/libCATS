@@ -30,7 +30,7 @@ If output buffer is NULL, then it will be allocated according to the packet leng
 
 Returns the length of output on success; Returns CATS_FAIL on failure
 */
-uint16_t cats_packet_build(cats_packet_t* pkt, uint8_t** out);
+uint16_t cats_packet_build(cats_packet_t* pkt, uint8_t* out);
 
 
 /* 
@@ -116,7 +116,7 @@ dataOut must already be allocated
 
 Returns the number of output bytes. Returns -1 if an error occurred.
 */
-int cats_packet_encode(cats_whisker_t* whiskers, int whiskerCount, uint8_t** dataOut);
+int cats_packet_encode(cats_whisker_t* whiskers, int whiskerCount, uint8_t* dataOut);
 
 // Decode a CATS packet into its individual whiskers
 // Packet must not include a header; Byte 0 should be the first byte after length L

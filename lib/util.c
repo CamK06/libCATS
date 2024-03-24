@@ -1,4 +1,5 @@
 #include "cats/util.h"
+
 #include <stdint.h>
 
 // Functions I was mostly too lazy and tired to research and write, so ChatGPT wrote them

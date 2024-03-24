@@ -24,7 +24,7 @@ void test_len()
     len += 56+53;
     
     assert(len == 2349);
-    len = cats_ldpc_encode(&buf, len);
+    len = cats_ldpc_encode(buf, len);
     assert(len == 4703);
 
     free(buf);
@@ -37,9 +37,9 @@ void test_encode_decode_short()
     strcpy(orig, "Hello world!");
     strcpy(buf, orig);
 
-    int len = cats_ldpc_encode(&buf, strlen(buf)+1);
+    int len = cats_ldpc_encode(buf, strlen(buf)+1);
     assert(memcmp(buf, orig, len) != 0);
-    len = cats_ldpc_decode(&buf, len);
+    len = cats_ldpc_decode(buf, len);
     assert(memcmp(buf, orig, len) == 0);
 
     free(buf);
@@ -54,9 +54,9 @@ void test_encode_decode()
         strcpy(orig+i*58, "This is a test packet. jsalksjd093809324JASLD:LKD*#$)(*#@)");
     strcpy(buf, orig);
 
-    int len = cats_ldpc_encode(&buf, strlen(buf)+1);
+    int len = cats_ldpc_encode(buf, strlen(buf)+1);
     assert(memcmp(buf, orig, len) != 0);
-    len = cats_ldpc_decode(&buf, len);
+    len = cats_ldpc_decode(buf, len);
     assert(memcmp(buf, orig, len) == 0);
 
     free(buf);
@@ -71,14 +71,14 @@ void test_encode_decode_bit_flips()
         strcpy(orig+i*55, "jsalksjd093809324JASLD:LKD*#$)(*#@) Another test packet");
     strcpy(buf, orig);
 
-    int len = cats_ldpc_encode(&buf, strlen(buf)+1);
+    int len = cats_ldpc_encode(buf, strlen(buf)+1);
     assert(memcmp(buf, orig, len) != 0);
 
     buf[234] ^= 0x55;
     buf[0] ^= 0xAA;
     buf[999] ^= 0x43;
 
-    len = cats_ldpc_decode(&buf, len);
+    len = cats_ldpc_decode(buf, len);
     assert(memcmp(buf, orig, len) == 0);
 
     free(buf);

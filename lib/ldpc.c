@@ -1,157 +1,155 @@
 #include "cats/ldpc.h"
+#include "cats/util.h"
 #include "cats/error.h"
+#include "cats/ldpc_matrices.h"
 
 #include <labrador_ldpc.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stddef.h>
 #include <assert.h>
-#include "cats/util.h"
-#include "cats/ldpc_matrices.h"
 
-int cats_ldpc_pick_code(int len)
+static int ldpc_pick_code(const size_t len)
 {
-    if(512 <= len)
+    if(len >= 512) {
         return LABRADOR_LDPC_CODE_TM8192;
-    else if(128 <= len)
+    }
+    else if(len >= 128) {
         return LABRADOR_LDPC_CODE_TM2048;
-    else if(32 <= len)
+    }
+    else if(len >= 32) {
         return LABRADOR_LDPC_CODE_TC512;
-    else if(16 <= len)
+    }
+    else if(len >= 16) {
         return LABRADOR_LDPC_CODE_TC256;
-    else
+    }
+    else {
         return LABRADOR_LDPC_CODE_TC128;
+    }
 }
 
 // Temporary: Will replace pick_code once decoding is implemented
-cats_ldpc_code_t* cats_ldpc_pick_code_2(int len)
+static cats_ldpc_code* ldpc_pick_code_2(const size_t len)
 {
-    if(len >= 512)
+    if(len >= 512) {
         return &tm8192;
-    else if(len >= 128)
+    }
+    else if(len >= 128) {
         return &tm2048;
-    else if(len >= 32)
+    }
+    else if(len >= 32) {
         return &tc512;
-    else if(len >= 16)
+    }
+    else if(len >= 16) {
         return &tc256;
-    else
+    }
+    else {
         return &tc128;
+    }
 }
 
-void cats_ldpc_encode_chunk(uint8_t* data, cats_ldpc_code_t* code)
+static size_t ldpc_encode_chunk(const uint8_t* data, const cats_ldpc_code* code, uint8_t* parity_out)
 {
     // Code parameters
-    int k = code->k;
-    int r = code->n - code->k;
-    int b = code->circulantSize;
+    const int data_length_bits = code->data_length_bits;
+    const int parity_length_bits = code->code_length_bits - code->data_length_bits;
+    const int circ_size = code->circulant_size;
     const uint64_t* gc = code->matrix;
-    int rowLen = r/64;
+    const int row_len = parity_length_bits / 64;
 
-    uint8_t parity[(code->k)];
-    memset(parity, 0x00, (code->k)/8);
+    memset(parity_out, 0x00, parity_length_bits / 8);
 
-    // Thank you ChatGPT ...for making me feel stupid...
-    // (my own port of this code that I couldn't get working was wrong by merely a few characters)
-    for (int offset = 0; offset < b; offset++) {
-        for (int crow = 0; crow < k/b; crow++) {
-            int bit = crow*b + offset;
-            if(GET_BIT(data[bit/8], bit%8)) {
-                for (int idx = 0; idx < rowLen; idx++) {
-                    uint64_t circ = gc[(crow*rowLen)+idx];
-                    parity[idx*8 + 7] ^= (uint8_t)(circ >>  0);
-                    parity[idx*8 + 6] ^= (uint8_t)(circ >>  8);
-                    parity[idx*8 + 5] ^= (uint8_t)(circ >> 16);
-                    parity[idx*8 + 4] ^= (uint8_t)(circ >> 24);
-                    parity[idx*8 + 3] ^= (uint8_t)(circ >> 32);
-                    parity[idx*8 + 2] ^= (uint8_t)(circ >> 40);
-                    parity[idx*8 + 1] ^= (uint8_t)(circ >> 48);
-                    parity[idx*8 + 0] ^= (uint8_t)(circ >> 56);
+    for (int offset = 0; offset < circ_size; offset++) {
+        for (int crow = 0; crow < data_length_bits / circ_size; crow++) {
+            const int bit = crow * circ_size + offset;
+            if(GET_BIT(data[bit / 8], bit % 8)) {
+                for (int idx = 0; idx < row_len; idx++) {
+                    uint64_t circ = gc[(crow * row_len) + idx];
+                    for(int j = 0; j < 8; j++) {
+                        parity_out[idx*8 + j] ^= (uint8_t)(circ >> ((7 - j) * 8));
+                    }
                 }
             }
         }
 
-        for (int block = 0; block < r/b; block++) {
-            uint8_t* parityblock = &parity[block*b/8];
-            uint8_t carry = parityblock[0] >> 7;
-            for (int k = (b/8)-1; k >= 0; k--) {
-                uint8_t c = parityblock[k] >> 7;
-                parityblock[k] = (parityblock[k] << 1) | carry;
+        for (int block = 0; block < parity_length_bits / circ_size; block++) {
+            uint8_t* parity_block = &parity_out[block * circ_size / 8];
+            uint8_t carry = parity_block[0] >> 7;
+            for (int x = (circ_size / 8) - 1; x >= 0; x--) {
+                uint8_t c = parity_block[x] >> 7;
+                parity_block[x] = (parity_block[x] << 1) | carry;
                 carry = c;
             }
         }
     }
 
-    memcpy(data+(code->k/8), parity, code->k/8);
+    return parity_length_bits / 8;
 }
 
-uint16_t cats_ldpc_encode(uint8_t** data, uint16_t len)
+size_t cats_ldpc_encode(uint8_t* data, size_t len)
 {
-    uint8_t out[len*2+8]; // 8 extra bytes to accomodate padded blocks
+    assert(len < 4096); // 8192??
+
+    // Enough temp space to support the largest LDPC code; TM8192
+    uint8_t parity[512];
 
     // Split data into blocks and encode each block
     int i = 0;
-    while(len-i > 0) {
-        cats_ldpc_code_t* code = cats_ldpc_pick_code_2(len-i);
-        int k = code->k;
-        
-        uint8_t chunk[code->n/8];
-        memset(chunk, 0xAA, k/8);
-        memcpy(chunk, (*data)+i, (len-i < k/8) ? (len-i) : (k/8));
+    while(i < len) {
+        const int remaining_bytes = len - i;
+        const cats_ldpc_code* code = ldpc_pick_code_2(remaining_bytes);
+        const int data_length = code->data_length_bits / 8;
 
-        cats_ldpc_encode_chunk(chunk, code);
-        memcpy(out+i, chunk, (len-i < k/8) ? (len-i) : (k/8));  // Data
-        memcpy(out+len+i, chunk+(k/8), k/8); // Parity
+        uint8_t chunk[data_length];
+        memset(chunk, 0xAA, data_length);
+        memcpy(chunk, data + i, (remaining_bytes < data_length) ? remaining_bytes : data_length);
 
-        i += k/8;
+        const size_t parity_len = ldpc_encode_chunk(chunk, code, parity);
+        memcpy(data + len + i, parity, parity_len); // Parity
+
+        i += data_length;
     }
 
-    // Reallocate data buffer to new length and copy 'out' to it
-    int newLen = (len*2) + 2 + (i-len); // (Data+Parity) + (Length) + (Padded parity)
-    
-    uint8_t* tmp = realloc(*data, newLen);
-    if(tmp == NULL)
-        throw(MALLOC_FAIL);
-    *data = tmp; 
+    const int new_len = (len*2) + (i-len) + 2; // (Data + Parity) + (Padded parity) + (Length)
+    data[new_len - 2] = len;
+    data[new_len - 1] = len >> 8;
 
-    memcpy(*data, out, newLen);
-    memcpy((*data)+newLen-2, &len, sizeof(uint16_t)); // Set the last 2 bytes to the length
-    return newLen;
+    return new_len;
 }
 
-uint16_t cats_ldpc_decode(uint8_t** buf, uint16_t bufLen)
+size_t cats_ldpc_decode(uint8_t* buf, size_t buf_len)
 {
-    if(bufLen < 2)
+    // We should never have just the 2 length bytes
+    if(buf_len <= 2) {
         throw(LDPC_DECODE_FAIL);
-
-    uint16_t len;
-    memcpy(&len, (*buf)+bufLen-2, sizeof(uint16_t));
-    if(len >= bufLen)
-        throw(LDPC_DECODE_FAIL);
-
-    uint8_t out[len];
-
-    int i = 0;
-    while(len-i > 0) {
-        int code = cats_ldpc_pick_code(len-i);
-        int k = labrador_ldpc_code_k(code);
-
-        uint8_t chunk[labrador_ldpc_code_n(code)/8];
-        memset(chunk, 0xAA, k/8);
-        memcpy(chunk, (*buf)+i, (len-i < k/8) ? (len-i) : (k/8)); // Data
-        memcpy(chunk+(k/8), (*buf)+len+i, k/8); // Parity
-
-        uint8_t decOut[labrador_ldpc_output_len(code)];
-        uint8_t working[LABRADOR_LDPC_BF_WORKING_LEN_TM8192];
-        labrador_ldpc_decode_bf(code, chunk, decOut, working, 16, NULL);
-        memcpy(out+i, decOut, (len-i < k/8) ? (len-i) : (k/8));
-        i += k/8;
     }
 
-    uint8_t* tmp = realloc(*buf, len);
-    if(tmp == NULL)
-        throw(MALLOC_FAIL);
-    *buf = tmp;
+    // Extract the length from the data buffer
+    const uint16_t len = (buf[buf_len - 1] << 8) | buf[buf_len - 2];
+    if(len >= buf_len) {
+        throw(LDPC_DECODE_FAIL);
+    }
 
-    memset(*buf, 0x00, len);
-    memcpy(*buf, out, len);
+    int i = 0;
+    while(i < len) {
+        const int remaining_bytes = len - i;
+        const int code = ldpc_pick_code(remaining_bytes);
+        const int code_length = labrador_ldpc_code_n(code) / 8;
+        const int data_length_bits = labrador_ldpc_code_k(code);
+        const int data_length = data_length_bits / 8;
+
+        uint8_t chunk[code_length];
+        memset(chunk, 0xAA, data_length);
+        memcpy(chunk, buf + i, (remaining_bytes < data_length) ? remaining_bytes : data_length); // Data
+        memcpy(chunk + data_length, buf + len + i, data_length); // Parity
+
+        uint8_t dec_out[labrador_ldpc_output_len(code)];
+        uint8_t working[LABRADOR_LDPC_BF_WORKING_LEN_TM8192];
+        labrador_ldpc_decode_bf(code, chunk, dec_out, working, 16, NULL);
+        memcpy(buf + i, dec_out, (remaining_bytes < data_length) ? remaining_bytes : data_length);
+
+        i += data_length;
+    }
+
     return len;
 }

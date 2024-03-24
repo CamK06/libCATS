@@ -1,53 +1,53 @@
 #include "cats/ldpc_matrices.h"
 
-cats_ldpc_code_t tc128 = {
-    .n = 128,
-    .k = 64,
-    .puncturedBits = 0,
-    .bfWorkingLen = 128 + 0,
-    .circulantSize = 128/8,
+cats_ldpc_code tc128 = {
+    .code_length_bits = 128,
+    .data_length_bits = 64,
+    .punctured_bits = 0,
+    .bf_working_len = 128 + 0,
+    .circulant_size = 128/8,
     .matrix = tc128_matrix,
-    .matrixLen = 4
+    .matrix_len = 4
 };
 
-cats_ldpc_code_t tc256 = {
-    .n = 256,
-    .k = 128,
-    .puncturedBits = 0,
-    .bfWorkingLen = 256 + 0,
-    .circulantSize = 256/8,
+cats_ldpc_code tc256 = {
+    .code_length_bits = 256,
+    .data_length_bits = 128,
+    .punctured_bits = 0,
+    .bf_working_len = 256 + 0,
+    .circulant_size = 256/8,
     .matrix = tc256_matrix,
-    .matrixLen = 8
+    .matrix_len = 8
 };
 
-cats_ldpc_code_t tc512 = {
-    .n = 512,
-    .k = 256,
-    .puncturedBits = 0,
-    .bfWorkingLen = 512 + 0,
-    .circulantSize = 512/8,
+cats_ldpc_code tc512 = {
+    .code_length_bits = 512,
+    .data_length_bits = 256,
+    .punctured_bits = 0,
+    .bf_working_len = 512 + 0,
+    .circulant_size = 512/8,
     .matrix = tc512_matrix,
-    .matrixLen = 16
+    .matrix_len = 16
 };
 
-cats_ldpc_code_t tm2048 = {
-    .n = 2048,
-    .k = 1024,
-    .puncturedBits = 512,
-    .bfWorkingLen = 2048 + 512,
-    .circulantSize = 512/4,
+cats_ldpc_code tm2048 = {
+    .code_length_bits = 2048,
+    .data_length_bits = 1024,
+    .punctured_bits = 512,
+    .bf_working_len = 2048 + 512,
+    .circulant_size = 512/4,
     .matrix = tm2048_matrix,
-    .matrixLen = 128
+    .matrix_len = 128
 };
 
-cats_ldpc_code_t tm8192 = {
-    .n = 8192,
-    .k = 4096,
-    .puncturedBits = 2048,
-    .bfWorkingLen = 8192 + 2048,
-    .circulantSize = 2048/4,
+cats_ldpc_code tm8192 = {
+    .code_length_bits = 8192,
+    .data_length_bits = 4096,
+    .punctured_bits = 2048,
+    .bf_working_len = 8192 + 2048,
+    .circulant_size = 2048/4,
     .matrix = tm8192_matrix,
-    .matrixLen = 512
+    .matrix_len = 512
 };
 
 const uint64_t tc128_matrix[] = { 
