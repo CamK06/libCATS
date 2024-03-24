@@ -2,10 +2,14 @@
 #define CATS_WHISKER_H
 
 #include <stdint.h>
+#include <stddef.h>
 
 #define CATS_ROUTE_PAST 0xFF
 #define CATS_ROUTE_FUTURE 0xFD
 #define CATS_ROUTE_INET 0xFE
+
+#define CATS_MAX_WHISKER_LEN 255
+#define CATS_MAX_WHISKERS 255
 
 typedef enum cats_whisker_type {
 	WHISKER_TYPE_IDENTIFICATION,
@@ -112,7 +116,8 @@ typedef struct cats_whisker {
 	cats_whisker_data_t data;
 } cats_whisker_t;
 
-int cats_whisker_encode(const cats_whisker_t* whisker, uint8_t* out);
+// Returns number of bytes written to out
+size_t cats_whisker_encode(const cats_whisker_t* whisker, uint8_t* out);
 int cats_whisker_decode(const uint8_t* data, cats_whisker_t* out);
 int cats_whisker_base_len(const cats_whisker_type_t type);
 

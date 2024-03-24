@@ -313,11 +313,10 @@ int cats_packet_encode(cats_whisker_t* whiskers, int whiskerCount, uint8_t* data
 
 	int written = 0;
 	for(int i = 0; i < whiskerCount; i++) {
-		int whiskerLen = whiskers[i].len+2;
-		uint8_t whisker[whiskerLen];
-		cats_whisker_encode(&(whiskers[i]), whisker);
-		memcpy(dataOut+written, whisker, whiskerLen);
-		written += whiskerLen;
+		uint8_t whisker[CATS_MAX_WHISKER_LEN];
+		size_t whisker_len = cats_whisker_encode(&(whiskers[i]), whisker);
+		memcpy(dataOut+written, whisker, whisker_len);
+		written += whisker_len;
 	}
 
 	uint16_t crc = cats_crc16(dataOut, len);

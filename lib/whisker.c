@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <stddef.h>
 #include <assert.h>
 
 typedef size_t (*whisker_encode_func_t)(const cats_whisker_data_t* data, uint8_t* dest);
@@ -67,25 +68,25 @@ whisker_decode_func_t decoders[] = {
     &cats_nodeinfo_decode
 };
 
-int cats_whisker_encode(const cats_whisker_t* whisker, uint8_t* out)
+size_t cats_whisker_encode(const cats_whisker_t* whisker, uint8_t* out)
 {
     out[0] = whisker->type;
     out[1] = whisker->len;
 
-    const cats_whisker_data_t* data = &whisker->data;
+    const cats_whisker_data_t* data = &(whisker->data);
     if(whisker->type == WHISKER_TYPE_ARBITRARY
     || whisker->type == WHISKER_TYPE_COMMENT
     || whisker->type == WHISKER_TYPE_TIMESTAMP) {
         memcpy(&out[2], data->raw, whisker->len);
     }
     else if(whisker->type < CATS_NUM_WHISKER_TYPES) { // If whisker type is supported
-        encoders[whisker->type](data, out);
+        out[1] = encoders[whisker->type](data, out);
     }
     else {
         throw(UNSUPPORTED_WHISKER);
     }
 
-    return CATS_SUCCESS;
+    return out[1] + 2;
 }
 
 int cats_whisker_decode(const uint8_t* data, cats_whisker_t* out)
