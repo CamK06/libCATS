@@ -234,6 +234,7 @@ void cats_route_destroy(cats_route_whisker_t* route)
 cats_route_hop_t* cats_route_append_hop(cats_route_whisker_t* route)
 {
     cats_route_hop_t* hop = &(route->hops);
+    assert(hop != NULL);
     if(route->numHops != 0) {
         while(hop->next != NULL) {
             hop = hop->next;
@@ -243,6 +244,7 @@ cats_route_hop_t* cats_route_append_hop(cats_route_whisker_t* route)
     }
     route->numHops++;
     route->len++;
+    assert(hop != NULL);
     return hop;
 }
 
@@ -256,15 +258,16 @@ cats_route_hop_t* cats_route_new_hop()
     hop->rssi = 0;
     hop->ssid = 0;
     hop->next = NULL;
+    return hop;
 }
 
 int cats_route_add_hop(cats_route_whisker_t* route, const char* callsign, uint8_t ssid, uint8_t rssi, uint8_t type)
 {
     cats_route_hop_t* hop = cats_route_append_hop(route);
+    assert(hop != NULL);
     hop->hopType = type;
     hop->rssi = rssi;
     hop->ssid = ssid;
-    hop->next = NULL;
     strcpy(hop->callsign, callsign);
 
     if(type != CATS_ROUTE_INET) {

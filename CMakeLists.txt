@@ -8,6 +8,8 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     endif()
 endif()
 
+#set(CMAKE_C_FLAGS_RELEASE "-O2")
+
 file(GLOB SOURCES lib/buffer.c
                 lib/error.c
                 lib/interleaver.c
