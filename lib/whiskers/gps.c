@@ -25,7 +25,7 @@ size_t cats_gps_encode(const cats_whisker_data_t* data, uint8_t* dest)
     dest[10] = alt;
     dest[11] = alt >> 8;
 
-    dest[12] = gps->maxError;
+    dest[12] = gps->max_error;
     dest[13] = gps->heading;
     
     dest[14] = vel;
@@ -42,7 +42,7 @@ void cats_gps_decode(const uint8_t* data, size_t len, cats_whisker_data_t* dest)
     uint16_t vel = (data[15] << 8) | data[14];
 
     cats_gps_whisker_t* gps = &(dest->gps);
-    gps->maxError = data[12];
+    gps->max_error = data[12];
     gps->heading = data[13];
     gps->latitude = int32_to_lat(lat);
     gps->longitude = int32_to_lon(lon);

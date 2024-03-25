@@ -30,4 +30,4 @@ extern const uint64_t tc512_matrix[];
 extern const uint64_t tm2048_matrix[];
 extern const uint64_t tm8192_matrix[];
 
-#endif
+#endif // CATS_LDPC_MATRICES_H

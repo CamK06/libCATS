@@ -14,9 +14,10 @@ uint16_t cats_crc16(uint8_t* data, int len);
 int cats_packet_prepare(cats_packet_t** pkt)
 {
 	*pkt = malloc(sizeof(cats_packet_t));
-	if((*pkt) == NULL)
+	if((*pkt) == NULL) {
 		throw(MALLOC_FAIL);
-	
+	}
+
 	(*pkt)->len = 0;
 	(*pkt)->numWhiskers = 0;
 	(*pkt)->whiskers = NULL;
@@ -26,8 +27,9 @@ int cats_packet_prepare(cats_packet_t** pkt)
 
 int cats_packet_destroy(cats_packet_t** pkt)
 {
-	if((*pkt) == NULL)
+	if((*pkt) == NULL) {
 		return CATS_SUCCESS;
+	}
 
 	cats_whisker_t* whisker = (*pkt)->whiskers;
 	while(whisker != NULL) {
@@ -94,14 +96,14 @@ int cats_packet_decode(cats_packet_t* pkt, uint8_t* buf, size_t buf_len)
 	cats_whiten(buf, len);
 
 	// 4. CRC checksum
-	uint16_t crc_actual = cats_crc16(buf, len - 2);
-	uint16_t crc_expect = (buf[len-1] << 8) | buf[len - 2];
+	const uint16_t crc_actual = cats_crc16(buf, len - 2);
+	const uint16_t crc_expect = (buf[len-1] << 8) | buf[len - 2];
 	if(crc_actual != crc_expect)
 		throw(INVALID_CRC);
 
 	// 5. Whiskers
 	for(int i = 0; i < len - 2; i += 2) {
-		uint8_t whisker_len = buf[i + 1];
+		const uint8_t whisker_len = buf[i + 1];
 		
 		cats_whisker_t whisker;
 		cats_whisker_decode(&buf[i], &whisker);
@@ -143,7 +145,7 @@ int cats_packet_add_comment(cats_packet_t* pkt, const char* comment)
 	cats_whisker_t whisker;
 	whisker.type = WHISKER_TYPE_COMMENT;
 
-	int len = strlen(comment);
+	const int len = strlen(comment);
 	int written = 0;
 	int r = CATS_SUCCESS;
 	while(written < len) {
@@ -177,7 +179,7 @@ int cats_packet_add_gps(cats_packet_t* pkt, double lat, double lon, float alt, u
 	gps.altitude = alt;
 	gps.heading = heading;
 	gps.speed = speed;
-	gps.maxError = error;
+	gps.max_error = error;
 	gps.latitude = lat;
 	gps.longitude = lon;
 
@@ -321,7 +323,7 @@ int cats_packet_find_whiskers(const cats_packet_t* pkt, cats_whisker_type_t type
 int cats_packet_get_identification(const cats_packet_t* pkt, cats_ident_whisker_t** out)
 {
 	cats_whisker_t** whiskers;
-	int whiskers_found = cats_packet_find_whiskers(pkt, WHISKER_TYPE_IDENTIFICATION, &whiskers);
+	const int whiskers_found = cats_packet_find_whiskers(pkt, WHISKER_TYPE_IDENTIFICATION, &whiskers);
 	if(whiskers_found <= CATS_FAIL) {
 		throw_msg(WHISKER_NOT_FOUND, "cats_packet_get_identification: packet has no identification whisker!");
 	}
@@ -332,10 +334,10 @@ int cats_packet_get_identification(const cats_packet_t* pkt, cats_ident_whisker_
 	return CATS_SUCCESS;
 }
 
-int cats_packet_get_comment(const cats_packet_t* pkt, char* comment)
+int cats_packet_get_comment(const cats_packet_t* pkt, char* out)
 {
 	cats_whisker_t** whiskers;
-	int whiskers_found = cats_packet_find_whiskers(pkt, WHISKER_TYPE_COMMENT, &whiskers);
+	const int whiskers_found = cats_packet_find_whiskers(pkt, WHISKER_TYPE_COMMENT, &whiskers);
 	if(whiskers_found <= CATS_FAIL) {
 		throw_msg(WHISKER_NOT_FOUND, "cats_packet_get_comment: packet has no comment whiskers!");
 	}
@@ -347,10 +349,11 @@ int cats_packet_get_comment(const cats_packet_t* pkt, char* comment)
 		if(whisker->len <= 0) {
 			throw_msg(INVALID_OR_NO_COMMENT, "cats_packet_get_comment: comment whisker length is <= 0!");
 		}
-		strncpy(comment + written, whisker->data.raw, whisker->len);
+
+		strncpy(out + written, whisker->data.raw, whisker->len);
 		written += whisker->len;
 	}
-	comment[written] = '\0';
+	out[written] = '\0';
 	free(whiskers);
 
 	return CATS_SUCCESS;
@@ -359,9 +362,10 @@ int cats_packet_get_comment(const cats_packet_t* pkt, char* comment)
 int cats_packet_get_gps(const cats_packet_t* pkt, cats_gps_whisker_t** out)
 {
 	cats_whisker_t** whiskers;
-	int whiskers_found = cats_packet_find_whiskers(pkt, WHISKER_TYPE_GPS, &whiskers);
-	if(whiskers_found <= CATS_FAIL)
+	const int whiskers_found = cats_packet_find_whiskers(pkt, WHISKER_TYPE_GPS, &whiskers);
+	if(whiskers_found <= CATS_FAIL) {
 		throw_msg(WHISKER_NOT_FOUND, "cats_packet_get_gps: packet has no GPS whiskers!");
+	}
 	cats_whisker_t* whisker = *whiskers;
 	free(whiskers);
 
@@ -373,9 +377,10 @@ int cats_packet_get_gps(const cats_packet_t* pkt, cats_gps_whisker_t** out)
 int cats_packet_get_route(const cats_packet_t* pkt, cats_route_whisker_t** out)
 {
 	cats_whisker_t** whiskers;
-	int whiskers_found = cats_packet_find_whiskers(pkt, WHISKER_TYPE_ROUTE, &whiskers);
-	if(whiskers_found <= CATS_FAIL)
+	const int whiskers_found = cats_packet_find_whiskers(pkt, WHISKER_TYPE_ROUTE, &whiskers);
+	if(whiskers_found <= CATS_FAIL) {
 		throw_msg(WHISKER_NOT_FOUND, "cats_packet_get_route: packet has no route whiskers!");
+	}
 	cats_whisker_t* whisker = *whiskers;
 	free(whiskers);
 	
@@ -387,9 +392,10 @@ int cats_packet_get_route(const cats_packet_t* pkt, cats_route_whisker_t** out)
 int cats_packet_get_destination(const cats_packet_t* pkt, cats_destination_whisker_t** out)
 {
 	cats_whisker_t** whiskers;
-	int whiskers_found = cats_packet_find_whiskers(pkt, WHISKER_TYPE_DESTINATION, &whiskers);
-	if(whiskers_found <= CATS_FAIL)
+	const int whiskers_found = cats_packet_find_whiskers(pkt, WHISKER_TYPE_DESTINATION, &whiskers);
+	if(whiskers_found <= CATS_FAIL) {
 		throw_msg(WHISKER_NOT_FOUND, "cats_packet_get_destination: packet has no destination whiskers!");
+	}
 	cats_whisker_t* whisker = *whiskers;
 	free(whiskers);
 	
@@ -401,9 +407,10 @@ int cats_packet_get_destination(const cats_packet_t* pkt, cats_destination_whisk
 int cats_packet_get_simplex(const cats_packet_t* pkt, cats_simplex_whisker_t** out)
 {
 	cats_whisker_t** whiskers;
-	int whiskers_found = cats_packet_find_whiskers(pkt, WHISKER_TYPE_SIMPLEX, &whiskers);
-	if(whiskers_found <= CATS_FAIL)
+	const int whiskers_found = cats_packet_find_whiskers(pkt, WHISKER_TYPE_SIMPLEX, &whiskers);
+	if(whiskers_found <= CATS_FAIL) {
 		throw_msg(WHISKER_NOT_FOUND, "cats_packet_get_simplex: packet has no simplex whiskers!");
+	}
 	cats_whisker_t* whisker = *whiskers;
 	free(whiskers);
 
@@ -415,9 +422,10 @@ int cats_packet_get_simplex(const cats_packet_t* pkt, cats_simplex_whisker_t** o
 int cats_packet_get_repeater(const cats_packet_t* pkt, cats_repeater_whisker_t** out)
 {
 	cats_whisker_t** whiskers;
-	int whiskers_found = cats_packet_find_whiskers(pkt, WHISKER_TYPE_REPEATER, &whiskers);
-	if(whiskers_found <= CATS_FAIL)
+	const int whiskers_found = cats_packet_find_whiskers(pkt, WHISKER_TYPE_REPEATER, &whiskers);
+	if(whiskers_found <= CATS_FAIL) {
 		throw_msg(WHISKER_NOT_FOUND, "cats_packet_get_repeater: packet has no repeater whiskers!");
+	}
 	cats_whisker_t* whisker = *whiskers;
 	free(whiskers);
 

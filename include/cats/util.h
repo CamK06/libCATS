@@ -21,4 +21,4 @@ int16_t lon_to_int16(double lon);
 double int16_to_lat(int16_t lat);
 double int16_to_lon(int16_t lon);
 
-#endif
+#endif // CATS_UTIL_H

@@ -11,4 +11,4 @@ size_t cats_ldpc_encode(uint8_t* data, size_t len);
 // Returns: New buffer length
 size_t cats_ldpc_decode(uint8_t* buf, size_t buf_len);
 
-#endif
+#endif // CATS_LDPC_H

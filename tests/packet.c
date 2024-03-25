@@ -85,7 +85,7 @@ void test_encode_decode()
     assert(fabs(data->gps.altitude-50.3f) <= 0.05f);
     assert(data->gps.heading == 8);
     assert(fabs(data->gps.speed-69) <= 0.05f);
-    assert(data->gps.maxError == 5);
+    assert(data->gps.max_error == 5);
     assert(fabs(data->gps.latitude-47.573135) < 0.0000001);
     assert(fabs(data->gps.longitude-(-53.556391)) <= 0.0000001);
 

@@ -71,7 +71,7 @@ void test_gps()
     data.altitude = 50.3f;
     data.heading = 8;
     data.speed = 69;
-    data.maxError = 5;
+    data.max_error = 5;
     data.latitude = 47.573135;
     data.longitude = -53.556391;
 
@@ -92,7 +92,7 @@ void test_gps()
     assert(fabs(data.altitude-50.3f) <= 0.05f);
     assert(data.heading == 8);
     assert(fabs(data.speed-69) <= 0.05f);
-    assert(data.maxError == 5);
+    assert(data.max_error == 5);
     assert(fabs(data.latitude-47.573135) < 0.0000001);
     assert(fabs(data.longitude-(-53.556391)) <= 0.0000001);
 
@@ -125,9 +125,9 @@ void test_route()
     static uint8_t expect[] = { 0x04, 0x1b, 0x03, 0x56, 0x45, 0x33, 0x4b, 0x43, 0x4e, 0xff, 0x07, 0x10, 0x56, 0x45, 0x32, 0x44,
                          0x45, 0x46, 0xfd, 0xea, 0x56, 0x45, 0x33, 0x58, 0x59, 0x5a, 0xfd, 0x0e, 0xfe};
     cats_route_whisker_t data;
-    data.maxDigipeats = 3;
+    data.max_digipeats = 3;
     data.len = 0;
-    data.numHops = 0;
+    data.num_hops = 0;
     data.hops.next = NULL;
 
     cats_route_add_hop(&data, "VE3KCN", 7, 0x10, CATS_ROUTE_PAST);
@@ -151,27 +151,27 @@ void test_route()
     data = whisker->data.route;
     cats_route_hop_t* hop = &(data.hops);
 
-    assert(data.maxDigipeats == 3);
+    assert(data.max_digipeats == 3);
     assert(strcmp(hop->callsign, "VE3KCN") == 0);
-    assert(hop->hopType == 0xFF);
+    assert(hop->hop_type == 0xFF);
     assert(hop->rssi == 0x10);
     assert(hop->ssid == 7);
     assert(hop->next != NULL);
     hop = hop->next;
 
     assert(strcmp(hop->callsign, "VE2DEF") == 0);
-    assert(hop->hopType == CATS_ROUTE_FUTURE);
+    assert(hop->hop_type == CATS_ROUTE_FUTURE);
     assert(hop->ssid == 234);
     assert(hop->next != NULL);
     hop = hop->next;
 
     assert(strcmp(hop->callsign, "VE3XYZ") == 0);
-    assert(hop->hopType == CATS_ROUTE_FUTURE);
+    assert(hop->hop_type == CATS_ROUTE_FUTURE);
     assert(hop->ssid == 14);
     assert(hop->next != NULL);
     hop = hop->next;
 
-    assert(hop->hopType == CATS_ROUTE_INET);
+    assert(hop->hop_type == CATS_ROUTE_INET);
     assert(memcmp(buf, expect, whisker->len) == 0);
 
     cats_route_destroy(&(whisker->data.route));

@@ -6,4 +6,4 @@
 
 void cats_whiten(uint8_t* data, size_t len);
 
-#endif
+#endif // CATS_WHITENER_H

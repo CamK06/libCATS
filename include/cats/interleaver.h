@@ -7,4 +7,4 @@
 void cats_interleave(uint8_t* data, size_t len);
 void cats_deinterleave(uint8_t* data, size_t len);
 
-#endif
+#endif // CATS_INTERLEAVER_H

@@ -10,20 +10,20 @@ size_t cats_route_encode(const cats_whisker_data_t* data, uint8_t* dest)
 {
     const cats_route_whisker_t* route = &(data->route);
     int ptr = 2; // Skip over type and length
-    dest[ptr++] = data->route.maxDigipeats;
+    dest[ptr++] = data->route.max_digipeats;
     
-    if(route->numHops >= 1) {
+    if(route->num_hops >= 1) {
         const cats_route_hop_t* hop = &(route->hops);
         while(hop != NULL) {
-            if(hop->hopType == CATS_ROUTE_INET) {
-                dest[ptr++] = hop->hopType;
+            if(hop->hop_type == CATS_ROUTE_INET) {
+                dest[ptr++] = hop->hop_type;
             }
             else {
                 strcpy(&dest[ptr], hop->callsign);
                 ptr += strlen(hop->callsign);
-                dest[ptr++] = hop->hopType;
+                dest[ptr++] = hop->hop_type;
                 dest[ptr++] = hop->ssid;
-                if(hop->hopType == CATS_ROUTE_PAST)
+                if(hop->hop_type == CATS_ROUTE_PAST)
                     dest[ptr++] = hop->rssi;
             }
 
@@ -39,7 +39,7 @@ void cats_route_decode(const uint8_t* data, size_t len, cats_whisker_data_t* des
     cats_route_whisker_t* route = &(dest->route);
     int delim = 0;
     int begin = 3;
-    route->maxDigipeats = data[2];
+    route->max_digipeats = data[2];
 
     cats_route_hop_t* hop = NULL;
     for(int i = begin; i < len + 2; i++) {
@@ -47,9 +47,9 @@ void cats_route_decode(const uint8_t* data, size_t len, cats_whisker_data_t* des
         if(data[i] == CATS_ROUTE_FUTURE || data[i] == CATS_ROUTE_PAST || data[i] == CATS_ROUTE_INET) {
             delim = i;
             hop = cats_route_append_hop(route);
-            hop->hopType = data[delim];
+            hop->hop_type = data[delim];
             
-            if(hop->hopType != CATS_ROUTE_INET) {
+            if(hop->hop_type != CATS_ROUTE_INET) {
                 memcpy(hop->callsign, &data[begin], delim - begin);
                 begin = delim + 2; // Skip over SSID and delimiter itself
                 hop->ssid = data[delim + 1];
@@ -60,7 +60,7 @@ void cats_route_decode(const uint8_t* data, size_t len, cats_whisker_data_t* des
                     begin++;
                 }
             }
-            else if(hop->hopType == CATS_ROUTE_INET) {
+            else if(hop->hop_type == CATS_ROUTE_INET) {
                 begin = delim + 1; // This *might* need to be begin++
             }
         }
@@ -83,14 +83,14 @@ cats_route_hop_t* cats_route_append_hop(cats_route_whisker_t* route)
     cats_route_hop_t* hop = &(route->hops);
     assert(hop != NULL);
 
-    if(route->numHops != 0) {
+    if(route->num_hops != 0) {
         while(hop->next != NULL) {
             hop = hop->next;
         }
         hop->next = cats_route_new_hop();
         hop = hop->next;
     }
-    route->numHops++;
+    route->num_hops++;
     route->len++;
 
     assert(hop != NULL);
@@ -104,7 +104,7 @@ cats_route_hop_t* cats_route_new_hop()
         throw(MALLOC_FAIL);
     }
 
-    hop->hopType = 0;
+    hop->hop_type = 0;
     hop->rssi = 0;
     hop->ssid = 0;
     hop->next = NULL;
@@ -117,7 +117,7 @@ cats_route_hop_t* cats_route_add_hop(cats_route_whisker_t* route, const char* ca
     cats_route_hop_t* hop = cats_route_append_hop(route);
     assert(hop != NULL);
 
-    hop->hopType = type;
+    hop->hop_type = type;
     hop->rssi = rssi;
     hop->ssid = ssid;
     strcpy(hop->callsign, callsign);
