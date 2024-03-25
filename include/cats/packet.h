@@ -67,7 +67,7 @@ Get all instances of a whisker type in a packet
 
 Returns array of whiskers; CATS_FAIL on fail
 */
-cats_whisker_t** cats_packet_find_whiskers(const cats_packet_t* pkt, cats_whisker_type_t type);
+int cats_packet_find_whiskers(const cats_packet_t* pkt, cats_whisker_type_t type, cats_whisker_t*** out);
 
 /*
 Get the identification fields from a packet
@@ -95,8 +95,5 @@ int cats_packet_get_node_info(); // TODO
 
 // Everything below is NOT part of the 'public' API
 // TODO: Make inaccessible?
-
-// Calculate the CRC16/X25 of a buffer
-uint16_t cats_crc16(uint8_t* data, int len);
 
 #endif

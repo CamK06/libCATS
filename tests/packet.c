@@ -12,6 +12,8 @@ libCATS Packet Test
 #include <stdlib.h>
 #include <math.h>
 
+extern uint16_t cats_crc16(uint8_t* data, int len);
+
 void test_crc16()
 {
     uint8_t buf[] = {0xde, 0xea, 0xdb, 0xee, 0xff};
@@ -108,10 +110,41 @@ void test_encode_decode()
     free(buf);
 }
 
+void test_long_comment()
+{
+    uint8_t* comment = malloc(512);
+    uint8_t* expect = malloc(512);
+    uint8_t text[] = "This is a test of a really long comment that requires splitting into two separate comment whiskers aaabbcccdeeeefff";
+    for(int i = 0; i < 3; i++) {
+        memcpy(comment + (i * strlen(text)), text, strlen(text));
+        memcpy(expect + (i * strlen(text)), text, strlen(text));
+    }
+
+    uint8_t* buf = calloc(CATS_MAX_PKT_LEN, 1);
+    cats_packet_t* pkt;
+    cats_packet_prepare(&pkt);
+    cats_packet_add_comment(pkt, comment);
+
+    int len = cats_packet_encode(pkt, buf);
+    memset(comment, 0x00, 512);
+    cats_packet_destroy(&pkt);
+    cats_packet_prepare(&pkt);
+    assert(len > 0);
+
+    assert(cats_packet_decode(pkt, buf, len) == CATS_SUCCESS);
+    assert(strcmp(comment, expect) != 0);
+    cats_packet_get_comment(pkt, comment);
+    assert(strcmp(comment, expect) == 0);
+
+    cats_packet_destroy(&pkt);
+    free(buf);
+}
+
 int main()
 {
     test_crc16();
     test_decode();
     test_encode_decode();
+    test_long_comment();
     return 0;
 }
