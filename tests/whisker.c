@@ -122,20 +122,15 @@ void test_comment()
 
 void test_route()
 {
-    static uint8_t expect[] = { 0x04, 0x1b, 0x03, 0x56, 0x45, 0x33, 0x4b, 0x43, 0x4e, 0xff, 0x07, 0x10, 0x56, 0x45, 0x32, 0x44,
-                         0x45, 0x46, 0xfd, 0xea, 0x56, 0x45, 0x33, 0x58, 0x59, 0x5a, 0xfd, 0x0e, 0xfe};
-    cats_route_whisker_t data;
-    data.max_digipeats = 3;
-    data.len = 0;
-    data.num_hops = 0;
-    data.hops.next = NULL;
+    static uint8_t expect[] = { 0x4, 0x1b, 0x3, 0x56, 0x45, 0x33, 0x4b, 0x43, 0x4e, 0xff, 0x7, 0x88, 0x56, 0x45, 0x32, 0x44,
+                                0x45, 0x46, 0xfd, 0xea, 0x56, 0x45, 0x33, 0x58, 0x59, 0x5a, 0xfd };
+    cats_route_whisker_t data = cats_route_new(3);
+    cats_route_add_past_hop(&data, "VE3KCN", 7, -69);
+    cats_route_add_future_hop(&data, "VE2DEF", 234);
+    cats_route_add_future_hop(&data, "VE3XYZ", 14);
+    cats_route_add_inet_hop(&data);
 
-    cats_route_add_hop(&data, "VE3KCN", 7, 0x10, CATS_ROUTE_PAST);
-    cats_route_add_hop(&data, "VE2DEF", 234, 0, CATS_ROUTE_FUTURE);
-    cats_route_add_hop(&data, "VE3XYZ", 14, 0, CATS_ROUTE_FUTURE);
-    cats_route_add_hop(&data, "", 0, 0, CATS_ROUTE_INET);
-
-    cats_whisker_t* whisker = malloc(sizeof(cats_whisker_t));
+    cats_whisker_t* whisker = cats_whisker_new();
     whisker->type = WHISKER_TYPE_ROUTE;
     whisker->data.route = data;
     whisker->len = data.len+1;
@@ -145,7 +140,7 @@ void test_route()
     cats_route_destroy(&(whisker->data.route));
     free(whisker);
 
-    whisker = malloc(sizeof(cats_whisker_t));
+    whisker = cats_whisker_new();
     assert(cats_whisker_decode(buf, whisker) == CATS_SUCCESS);
 
     data = whisker->data.route;
@@ -154,7 +149,8 @@ void test_route()
     assert(data.max_digipeats == 3);
     assert(strcmp(hop->callsign, "VE3KCN") == 0);
     assert(hop->hop_type == 0xFF);
-    assert(hop->rssi == 0x10);
+    printf("RSSI: %ddBm\n", hop->rssi);
+    assert(hop->rssi == -69);
     assert(hop->ssid == 7);
     assert(hop->next != NULL);
     hop = hop->next;
