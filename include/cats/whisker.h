@@ -121,6 +121,7 @@ typedef struct cats_whisker {
 size_t cats_whisker_encode(const cats_whisker_t* whisker, uint8_t* out);
 int cats_whisker_decode(const uint8_t* data, cats_whisker_t* out);
 int cats_whisker_base_len(const cats_whisker_type_t type);
+cats_whisker_t* cats_whisker_new();
 
 cats_route_hop_t* cats_route_add_hop(cats_route_whisker_t* route, const char* callsign, uint8_t ssid, uint8_t rssi, uint8_t type);
 cats_route_hop_t* cats_route_append_hop(cats_route_whisker_t* route);

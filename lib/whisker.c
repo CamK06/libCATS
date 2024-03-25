@@ -112,6 +112,21 @@ int cats_whisker_decode(const uint8_t* data, cats_whisker_t* out)
     return CATS_SUCCESS;
 }
 
+cats_whisker_t* cats_whisker_new()
+{
+	cats_whisker_t* whisker = calloc(sizeof(cats_whisker_t), 1);
+	if(whisker == NULL) {
+		throw(MALLOC_FAIL);
+	}
+
+	memset(whisker->data.raw, 0x00, 255);
+	whisker->len = 0;
+	whisker->type = 0;
+	whisker->next = NULL;
+
+	return whisker;
+}
+
 int cats_whisker_base_len(const cats_whisker_type_t type)
 {
     if(type < 0 || type >= CATS_NUM_WHISKER_TYPES)

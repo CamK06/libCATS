@@ -21,8 +21,7 @@ void test_crc16()
 
 void test_decode()
 {
-    uint8_t* buf = malloc(68);
-    uint8_t orig[] = {
+    uint8_t buf[] = {
         0x42, 0x00, 0xa7, 0x57, 0x7e, 0x2b, 0xad, 0xcd, 0xb0, 0x6c, 0xe5, 0x0d,
         0x51, 0x7a, 0x02, 0xce, 0xe5, 0xa2, 0x40, 0xa9, 0x20, 0x1f, 0x83, 0x9a,
         0xcf, 0x46, 0x4b, 0x40, 0x7b, 0x75, 0xd4, 0x40, 0x2d, 0xcc, 0x21, 0x80,
@@ -30,12 +29,12 @@ void test_decode()
         0xe9, 0x3c, 0x8f, 0x54, 0x2a, 0x46, 0xb1, 0xbc, 0xc5, 0x41, 0x6c, 0x50,
         0xdf, 0xbd, 0xd5, 0xa1, 0xe1, 0xdd, 0x30, 0x34
     };
-    memcpy(buf, orig, 68);
 
-    int r = cats_packet_decode(buf+2, 68-2, NULL); // buf+2 is to skip length bytes
-    assert(r == 2);
-
-    free(buf);
+    cats_packet_t* pkt;
+    cats_packet_prepare(&pkt);
+    int r = cats_packet_decode(pkt, buf, 68);
+    
+    assert(r == CATS_SUCCESS);
 }
 
 void test_encode_decode()
@@ -52,13 +51,13 @@ void test_encode_decode()
     cats_packet_add_simplex(pkt, 14652000, MOD_FM, 5);
     //cats_packet_add_node_info();
     //cats_packet_add_route();
-    int len = cats_packet_build(pkt, buf);
+    int len = cats_packet_encode(pkt, buf);
     assert(len > 0);
     cats_packet_destroy(&pkt);
 
     // Decode the test packet
     cats_packet_prepare(&pkt);
-    int r = cats_packet_from_buf(pkt, buf, len);
+    int r = cats_packet_decode(pkt, buf, len);
     assert(r == CATS_SUCCESS);
 
     // Decode the identification
