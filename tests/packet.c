@@ -16,14 +16,14 @@ extern uint16_t cats_crc16(uint8_t* data, int len);
 
 void test_crc16()
 {
-    uint8_t buf[] = {0xde, 0xea, 0xdb, 0xee, 0xff};
-    uint16_t crc = cats_crc16(buf, 5);
+    static uint8_t buf[] = {0xde, 0xea, 0xdb, 0xee, 0xff};
+    const uint16_t crc = cats_crc16(buf, 5);
     assert(crc == 0xe384);
 }
 
 void test_decode()
 {
-    uint8_t buf[] = {
+    static uint8_t buf[] = {
         0x42, 0x00, 0xa7, 0x57, 0x7e, 0x2b, 0xad, 0xcd, 0xb0, 0x6c, 0xe5, 0x0d,
         0x51, 0x7a, 0x02, 0xce, 0xe5, 0xa2, 0x40, 0xa9, 0x20, 0x1f, 0x83, 0x9a,
         0xcf, 0x46, 0x4b, 0x40, 0x7b, 0x75, 0xd4, 0x40, 0x2d, 0xcc, 0x21, 0x80,
@@ -140,11 +140,46 @@ void test_long_comment()
     free(buf);
 }
 
+void test_should_digipeat()
+{
+    const char* callsign = "VE3KCN";
+    const uint16_t ssid = 7;
+
+    cats_packet_t* pkt;
+    cats_packet_prepare(&pkt);
+
+    assert(!cats_packet_should_digipeat(pkt, callsign, 7)); // No route; don't digipeat
+
+    cats_route_whisker_t new_route = cats_route_new(3);
+    cats_packet_add_route(pkt, new_route);
+
+    assert(cats_packet_should_digipeat(pkt, callsign, 7)); // max_digipeats < num_hops; digipeat
+
+    cats_route_whisker_t* route = NULL;
+    cats_packet_get_route(pkt, &route);
+    assert(route != NULL);
+    cats_route_add_inet_hop(route);
+    cats_route_add_inet_hop(route);
+    cats_route_add_inet_hop(route);
+    cats_route_add_past_hop(route, "VE3AAA", 2, -20);
+
+    assert(cats_packet_should_digipeat(pkt, callsign, 7)); // inet hops don't count; digipeat
+
+    cats_route_add_future_hop(route, "VE3ABC", 1);
+    cats_route_add_future_hop(route, callsign, ssid);
+
+    assert(!cats_packet_should_digipeat(pkt, callsign, 7)); // We are not the next hop; don't digipeat
+    assert(cats_packet_should_digipeat(pkt, "VE3ABC", 1)); // We are the next hop; digipeat
+
+    cats_packet_destroy(&pkt);
+}
+
 int main()
 {
     test_crc16();
     test_decode();
     test_encode_decode();
     test_long_comment();
+    test_should_digipeat();
     return 0;
 }

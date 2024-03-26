@@ -5,6 +5,7 @@
 #include "cats/ldpc.h"
 #include "cats/util.h"
 
+#include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -35,6 +36,10 @@ int cats_packet_destroy(cats_packet_t** pkt)
 	while(whisker != NULL) {
 		cats_whisker_t* prev = whisker;
 		whisker = whisker->next;
+
+		if(prev->type == WHISKER_TYPE_ROUTE) {
+			cats_route_destroy(&(prev->data.route));
+		}
 		free(prev);
 	}
 	(*pkt)->whiskers = NULL;
@@ -437,6 +442,38 @@ int cats_packet_get_repeater(const cats_packet_t* pkt, cats_repeater_whisker_t**
 int cats_packet_get_node_info()
 {
 	// TODO
+}
+
+bool cats_packet_should_digipeat(const cats_packet_t* pkt, const char* callsign, uint16_t ssid)
+{
+	assert(pkt != NULL);
+	cats_route_whisker_t* route;
+	int r = cats_packet_get_route(pkt, &route);
+	if(r == CATS_FAIL) {
+		return false; // No route found; don't digipeat
+	}
+
+	// Check if we are the next future hop in the route, also count the number of felinet hops
+	int felinet_hops = 0;
+	cats_route_hop_t* hop = &(route->hops);
+	while(hop != NULL) {
+		if(hop->hop_type == CATS_ROUTE_FUTURE) {
+			if(strcmp(hop->callsign, callsign) == 0 && hop->ssid == ssid) {
+				return true; // We are the first future hop; digipeat
+			}
+			return false; // We are not the first future hop; only that station can digipeat
+		}
+		else if(hop->hop_type == CATS_ROUTE_INET) {
+			felinet_hops++;
+		}
+		hop = hop->next;
+	}
+
+	if((route->num_hops - felinet_hops) < route->max_digipeats) {
+		return true; // No future hops are specified and max_digipeats has not been reached; digipeat
+	}
+
+	return false; // No digipeat conditions have been met; don't digipeat
 }
 
 // https://stackoverflow.com/a/75139158

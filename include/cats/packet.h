@@ -5,6 +5,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <stdbool.h>
 
 #define CATS_MAX_PKT_LEN 8191
 
@@ -49,5 +50,6 @@ int cats_packet_get_repeater(const cats_packet_t* pkt, cats_repeater_whisker_t**
 int cats_packet_get_node_info(); // TODO
 // Returns number of whiskers found; adds pointers to found whiskers to out
 int cats_packet_find_whiskers(const cats_packet_t* pkt, cats_whisker_type_t type, cats_whisker_t*** out);
+bool cats_packet_should_digipeat(const cats_packet_t* pkt, const char* callsign, uint16_t ssid);
 
 #endif // CATS_PACKET_H
