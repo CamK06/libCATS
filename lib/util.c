@@ -22,14 +22,6 @@ float float16_to_float32(uint16_t value) {
     return *(float*)&f32;
 }
 
-void uint64_to_5byte(uint64_t value, uint8_t* result) {
-    result[0] = (value >> 32) & 0xFF;
-    result[1] = (value >> 24) & 0xFF;
-    result[2] = (value >> 16) & 0xFF;
-    result[3] = (value >> 8) & 0xFF;
-    result[4] = value & 0xFF;
-}
-
 int32_t lat_to_int32(double lat)
 {
     return -(int32_t)(lat * (float)(1 << 31) / 90);

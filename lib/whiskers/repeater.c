@@ -6,6 +6,7 @@
 #include <stddef.h>
 #include <string.h>
 #include <stdlib.h>
+#include <assert.h>
 
 size_t cats_repeater_encode(const cats_whisker_data_t* data, uint8_t* dest)
 {
@@ -60,13 +61,15 @@ void cats_repeater_decode(const uint8_t* data, size_t len, cats_whisker_data_t* 
 
 int cats_packet_get_repeater(const cats_packet_t* pkt, cats_repeater_whisker_t*** out)
 {
+    assert(pkt != NULL);
+    assert(out != NULL);
 	cats_whisker_t** whiskers;
 	const int whiskers_found = cats_packet_find_whiskers(pkt, WHISKER_TYPE_REPEATER, &whiskers);
 	if(whiskers_found <= CATS_FAIL) {
 		throw_msg(WHISKER_NOT_FOUND, "cats_packet_get_repeater: packet has no repeater whiskers!");
 	}
 	
-	(*out) = malloc(sizeof(cats_repeater_whisker_t*)*whiskers_found);
+	(*out) = malloc(sizeof(cats_repeater_whisker_t*) * whiskers_found);
 	if((*out) == NULL) {
 		throw(MALLOC_FAIL);
 	}
@@ -80,6 +83,8 @@ int cats_packet_get_repeater(const cats_packet_t* pkt, cats_repeater_whisker_t**
 
 int cats_packet_add_repeater(cats_packet_t* pkt, uint32_t up, uint32_t down, cats_modulation_t modulation, uint32_t tone, uint8_t power, double lat, double lon, const char* name)
 {
+    assert(pkt != NULL);
+    assert(name != NULL);
 	if(pkt->len + 2 + cats_whisker_base_len(WHISKER_TYPE_REPEATER) > CATS_MAX_PKT_LEN) {
 		throw(PACKET_TOO_BIG);
 	}

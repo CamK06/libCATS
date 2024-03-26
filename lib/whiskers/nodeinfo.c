@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 #include <stdlib.h>
+#include <assert.h>
 
 size_t cats_nodeinfo_encode(const cats_whisker_data_t* data, uint8_t* dest)
 {

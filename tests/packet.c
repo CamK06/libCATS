@@ -51,6 +51,8 @@ void test_encode_decode()
     cats_packet_add_gps(pkt, 47.573135, -53.556391, 50.3f, 5, 8, 69.0f);
     cats_packet_add_repeater(pkt, 147520000, 146520000, MOD_FM, 1, 200, 47.57, -53.55, "VE3KCN-R");
     cats_packet_add_simplex(pkt, 14652000, MOD_FM, 5);
+    cats_packet_add_timestamp(pkt, 6942004);
+    cats_packet_add_arbitrary(pkt, "Arbitrary testing", 18);
     //cats_packet_add_node_info();
     //cats_packet_add_route();
     int len = cats_packet_encode(pkt, buf);
@@ -111,6 +113,14 @@ void test_encode_decode()
     assert(simplex[0]->modulation == MOD_FM);
     assert(simplex[0]->power == 5);
     free(simplex);
+
+    // Decode timestamp
+    assert(cats_packet_get_timestamp(pkt) == 6942004);
+
+    // Decode arbitrary
+    cats_whisker_t** arbitrary;
+    cats_packet_get_arbitrary(pkt, &arbitrary);
+    assert(strcmp(arbitrary[0]->data.raw, "Arbitrary testing") == 0);
 
     cats_packet_destroy(&pkt);
     free(buf);

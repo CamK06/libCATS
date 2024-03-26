@@ -159,6 +159,7 @@ int cats_packet_add_whisker(cats_packet_t* pkt, const cats_whisker_t* whisker)
 
 int cats_packet_find_whiskers(const cats_packet_t* pkt, cats_whisker_type_t type, cats_whisker_t*** out)
 {
+	assert(out != NULL);
 	cats_whisker_t* whisker = pkt->whiskers;
 	if(whisker == NULL) {
 		throw(EMPTY_PACKET);
@@ -177,7 +178,7 @@ int cats_packet_find_whiskers(const cats_packet_t* pkt, cats_whisker_type_t type
 	}
 
 	// Add matched whiskers to array
-	(*out) = malloc(sizeof(cats_whisker_t*)*found);
+	(*out) = malloc(sizeof(cats_whisker_t*) * found);
 	if((*out) == NULL) {
 		throw(MALLOC_FAIL);
 	}

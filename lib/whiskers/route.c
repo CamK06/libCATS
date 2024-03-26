@@ -171,11 +171,13 @@ cats_route_whisker_t cats_route_new(uint8_t max_digipeats)
 
 int cats_packet_get_route(const cats_packet_t* pkt, cats_route_whisker_t** out)
 {
+    assert(pkt != NULL);
 	cats_whisker_t** whiskers;
 	const int whiskers_found = cats_packet_find_whiskers(pkt, WHISKER_TYPE_ROUTE, &whiskers);
 	if(whiskers_found <= CATS_FAIL) {
 		throw_msg(WHISKER_NOT_FOUND, "cats_packet_get_route: packet has no route whiskers!");
 	}
+    assert(out != NULL);
 	cats_whisker_t* whisker = *whiskers;
 	free(whiskers);
 	
@@ -186,6 +188,7 @@ int cats_packet_get_route(const cats_packet_t* pkt, cats_route_whisker_t** out)
 
 int cats_packet_add_route(cats_packet_t* pkt, cats_route_whisker_t route)
 {
+    assert(pkt != NULL);
 	if(pkt->len + 2 + cats_whisker_base_len(WHISKER_TYPE_ROUTE) > CATS_MAX_PKT_LEN) {
 		throw(PACKET_TOO_BIG);
 	}

@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <string.h>
 #include <stdlib.h>
+#include <assert.h>
 
 size_t cats_ident_encode(const cats_whisker_data_t* data, uint8_t* dest)
 {
@@ -30,11 +31,13 @@ void cats_ident_decode(const uint8_t* data, size_t len, cats_whisker_data_t* des
 
 int cats_packet_get_identification(const cats_packet_t* pkt, cats_ident_whisker_t** out)
 {
+	assert(pkt != NULL);
 	cats_whisker_t** whiskers;
 	const int whiskers_found = cats_packet_find_whiskers(pkt, WHISKER_TYPE_IDENTIFICATION, &whiskers);
 	if(whiskers_found <= CATS_FAIL) {
 		throw_msg(WHISKER_NOT_FOUND, "cats_packet_get_identification: packet has no identification whisker!");
 	}
+	assert(out != NULL);
 	cats_whisker_t* whisker = *whiskers;
 	*out = &whisker->data.identification;
 
@@ -44,6 +47,7 @@ int cats_packet_get_identification(const cats_packet_t* pkt, cats_ident_whisker_
 
 int cats_packet_add_identification(cats_packet_t* pkt, const char* callsign, uint8_t ssid, uint16_t icon)
 {
+	assert(pkt != NULL);
 	if(callsign == NULL || strlen(callsign) <= 0 
 	|| strlen(callsign) > 252) {
 		throw(INVALID_OR_NO_CALLSIGN);

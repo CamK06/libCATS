@@ -4,9 +4,12 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <assert.h>
 
 int cats_packet_get_comment(const cats_packet_t* pkt, char* out)
 {
+	assert(pkt != NULL);
+	assert(out != NULL);;
 	cats_whisker_t** whiskers;
 	const int whiskers_found = cats_packet_find_whiskers(pkt, WHISKER_TYPE_COMMENT, &whiskers);
 	if(whiskers_found <= CATS_FAIL) {
@@ -32,6 +35,7 @@ int cats_packet_get_comment(const cats_packet_t* pkt, char* out)
 
 int cats_packet_add_comment(cats_packet_t* pkt, const char* comment)
 {
+	assert(pkt != NULL);
 	if(comment == NULL || strlen(comment) <= 0) {
 		throw(INVALID_OR_NO_COMMENT);
 	}

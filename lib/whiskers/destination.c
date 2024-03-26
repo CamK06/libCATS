@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <string.h>
 #include <stdlib.h>
+#include <assert.h>
 
 size_t cats_dest_encode(const cats_whisker_data_t* data, uint8_t* dest)
 {
@@ -25,18 +26,20 @@ void cats_dest_decode(const uint8_t* data, size_t len, cats_whisker_data_t* dest
 
     destination->ack = data[2];
     memcpy(destination->callsign, &data[3], len - 2);
-    destination->ssid = data[len+1];
+    destination->ssid = data[len + 1];
 }
 
 int cats_packet_get_destination(const cats_packet_t* pkt, cats_destination_whisker_t*** out)
 {
+	assert(pkt != NULL);
 	cats_whisker_t** whiskers;
 	const int whiskers_found = cats_packet_find_whiskers(pkt, WHISKER_TYPE_DESTINATION, &whiskers);
 	if(whiskers_found <= CATS_FAIL) {
 		throw_msg(WHISKER_NOT_FOUND, "cats_packet_get_destination: packet has no destination whiskers!");
 	}
+	assert(out != NULL);
 	
-	(*out) = malloc(sizeof(cats_destination_whisker_t*)*whiskers_found);
+	(*out) = malloc(sizeof(cats_destination_whisker_t*) * whiskers_found);
 	if((*out) == NULL) {
 		throw(MALLOC_FAIL);
 	}
@@ -50,6 +53,8 @@ int cats_packet_get_destination(const cats_packet_t* pkt, cats_destination_whisk
 
 int cats_packet_add_destination(cats_packet_t* pkt, const char* callsign, uint8_t ssid, uint8_t ack)
 {
+	assert(pkt != NULL);
+	assert(callsign != NULL);
 	if(pkt->len + 2 + cats_whisker_base_len(WHISKER_TYPE_DESTINATION) > CATS_MAX_PKT_LEN) {
 		throw(PACKET_TOO_BIG);
 	}

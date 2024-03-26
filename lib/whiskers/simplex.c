@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 #include <stdlib.h>
+#include <assert.h>
 
 size_t cats_simplex_encode(const cats_whisker_data_t* data, uint8_t* dest)
 {
@@ -31,13 +32,15 @@ void cats_simplex_decode(const uint8_t* data, size_t len, cats_whisker_data_t* d
 
 int cats_packet_get_simplex(const cats_packet_t* pkt, cats_simplex_whisker_t*** out)
 {
+	assert(pkt != NULL);
+	assert(out != NULL);
 	cats_whisker_t** whiskers;
 	const int whiskers_found = cats_packet_find_whiskers(pkt, WHISKER_TYPE_SIMPLEX, &whiskers);
 	if(whiskers_found <= CATS_FAIL) {
 		throw_msg(WHISKER_NOT_FOUND, "cats_packet_get_simplex: packet has no simplex whiskers!");
 	}
 	
-	(*out) = malloc(sizeof(cats_simplex_whisker_t*)*whiskers_found);
+	(*out) = malloc(sizeof(cats_simplex_whisker_t*) * whiskers_found);
 	if((*out) == NULL) {
 		throw(MALLOC_FAIL);
 	}
@@ -51,6 +54,7 @@ int cats_packet_get_simplex(const cats_packet_t* pkt, cats_simplex_whisker_t*** 
 
 int cats_packet_add_simplex(cats_packet_t* pkt, uint32_t frequency, cats_modulation_t modulation, uint8_t power)
 {
+	assert(pkt != NULL);
 	if(pkt->len + 2 + cats_whisker_base_len(WHISKER_TYPE_SIMPLEX) > CATS_MAX_PKT_LEN) {
 		throw(PACKET_TOO_BIG);
 	}
