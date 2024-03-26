@@ -35,7 +35,7 @@ int cats_packet_add_route(cats_packet_t* pkt, cats_route_whisker_t route);
 int cats_packet_add_destination(cats_packet_t* pkt, const char* callsign, uint8_t ssid, uint8_t ack);
 int cats_packet_add_simplex(cats_packet_t* pkt, uint32_t frequency, cats_modulation_t modulation, uint8_t power);
 int cats_packet_add_repeater(cats_packet_t* pkt, uint32_t up, uint32_t down, cats_modulation_t modulation, uint32_t tone, uint8_t power, double lat, double lon, const char* name);
-int cats_packet_add_nodeinfo(); // TODO
+int cats_packet_add_nodeinfo(cats_packet_t* pkt, cats_nodeinfo_whisker_t info);
 int cats_packet_add_arbitrary(cats_packet_t* pkt, const uint8_t* data, size_t len);
 int cats_packet_add_whisker_data(cats_packet_t* pkt, cats_whisker_type_t type, const cats_whisker_data_t* whisker_data, int len);
 // Copies data from whisker into packet, it is safe to free() whisker after calling this
@@ -51,7 +51,7 @@ int cats_packet_get_simplex(const cats_packet_t* pkt, cats_simplex_whisker_t*** 
 int cats_packet_get_repeater(const cats_packet_t* pkt, cats_repeater_whisker_t*** out);
 int cats_packet_get_arbitrary(const cats_packet_t* pkt, cats_whisker_t*** out);
 uint64_t cats_packet_get_timestamp(const cats_packet_t* pkt);
-int cats_packet_get_nodeinfo(); // TODO
+int cats_packet_get_nodeinfo(const cats_packet_t* pkt, cats_nodeinfo_whisker_t** out);
 // Returns number of whiskers found; adds pointers to found whiskers to out
 int cats_packet_find_whiskers(const cats_packet_t* pkt, cats_whisker_type_t type, cats_whisker_t*** out);
 bool cats_packet_should_digipeat(const cats_packet_t* pkt, const char* callsign, uint16_t ssid);

@@ -268,6 +268,53 @@ void test_repeater()
     free(whisker);
 }
 
+void test_nodeinfo()
+{
+    cats_nodeinfo_whisker_t info;
+    info.ant_gain.enabled = false;
+    info.ant_height.enabled = false;
+    info.battery_level.enabled = false;
+    info.hardware_id.enabled = true;
+    info.software_id.enabled = false;
+    info.temperature.enabled = false;
+    info.tx_power.enabled = true;
+    info.uptime.enabled = true;
+    info.voltage.enabled = true;
+    info.hardware_id.val = 7408;
+    info.uptime.val = 98;
+    info.tx_power.val = 30;
+    info.voltage.val = 12.8;
+
+    cats_whisker_t* whisker = cats_whisker_new();
+    whisker->type = WHISKER_TYPE_NODEINFO;
+    whisker->len = 16;
+    whisker->data.node_info = info;
+
+    uint8_t buf[whisker->len + 2];
+    assert(cats_whisker_encode(whisker, buf) != CATS_FAIL);
+
+    free(whisker);
+    info.hardware_id.enabled = false;
+    info.tx_power.enabled = false; // Just enough to make it fail if the decode didn't actually work
+
+    whisker = cats_whisker_new();
+    assert(cats_whisker_decode(buf, whisker) == CATS_SUCCESS);
+    info = whisker->data.node_info;
+
+    assert(info.ant_gain.enabled == false);
+    assert(info.ant_height.enabled == false);
+    assert(info.battery_level.enabled == false);
+    assert(info.hardware_id.enabled == true);
+    assert(info.software_id.enabled == false);
+    assert(info.temperature.enabled == false);
+    assert(info.tx_power.enabled == true);
+    assert(info.uptime.enabled == true);
+    assert(info.voltage.enabled == true);
+    assert(info.hardware_id.val == 7408);
+    assert(info.tx_power.val == 30);
+    assert(info.voltage.val = 12.8);
+}
+
 int main()
 {
     test_identification();
@@ -278,5 +325,6 @@ int main()
     test_destination();
     test_simplex();
     test_repeater();
+    test_nodeinfo();
     return 0;
 }

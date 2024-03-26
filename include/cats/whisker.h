@@ -3,10 +3,21 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <stdbool.h>
 
 #define CATS_ROUTE_PAST 0xFF
 #define CATS_ROUTE_FUTURE 0xFD
 #define CATS_ROUTE_INET 0xFE
+
+#define CATS_NODEINFO_HARDWARE_ID 1
+#define CATS_NODEINFO_SOFTWARE_ID 2
+#define CATS_NODEINFO_UPTIME 4
+#define CATS_NODEINFO_ANTENNA_HEIGHT 8
+#define CATS_NODEINFO_ANTENNA_GAIN 16
+#define CATS_NODEINFO_TX_POWER 32
+#define CATS_NODEINFO_VOLTAGE 64
+#define CATS_NODEINFO_TEMP 128
+#define CATS_NODEINFO_BATTERY 256
 
 #define CATS_MAX_WHISKER_LEN 255
 #define CATS_MAX_WHISKERS 255
@@ -40,6 +51,41 @@ typedef enum cats_modulation {
 	MOD_FUSION,
 	MOD_P25
 } cats_modulation_t;
+
+struct nodeinfo_voltage {
+	bool enabled;
+	float val;
+};
+
+struct nodeinfo_u8 {
+	bool enabled;
+	uint8_t val;
+};
+
+struct nodeinfo_i8 {
+	bool enabled;
+	int8_t val;
+};
+
+struct nodeinfo_u16 {
+	bool enabled;
+	uint16_t val;
+};
+
+struct nodeinfo_i16 {
+	bool enabled;
+	int16_t val;
+};
+
+struct nodeinfo_u32 {
+	bool enabled;
+	uint32_t val;
+};
+
+struct nodeinfo_i32 {
+	bool enabled;
+	int32_t val;
+};
 
 typedef struct cats_ident_whisker {
 	uint16_t icon;
@@ -94,10 +140,17 @@ typedef struct cats_repeater_whisker {
 	uint8_t name[238];
 } cats_repeater_whisker_t;
 
-typedef struct cats_node_info_whisker {
-	uint32_t bitmap;
-	uint8_t data[251];
-} cats_node_info_whisker_t;
+typedef struct cats_nodeinfo_whisker {
+	struct nodeinfo_u16 hardware_id;
+	struct nodeinfo_u8 software_id;
+	struct nodeinfo_u32 uptime;
+	struct nodeinfo_u8 ant_height;
+	struct nodeinfo_u8 ant_gain;
+	struct nodeinfo_u8 tx_power;
+	struct nodeinfo_voltage voltage;
+	struct nodeinfo_i8 temperature;
+	struct nodeinfo_u8 battery_level;
+} cats_nodeinfo_whisker_t;
 
 typedef union cats_whisker_data {
 	cats_ident_whisker_t identification;
@@ -106,7 +159,7 @@ typedef union cats_whisker_data {
 	cats_destination_whisker_t destination;
 	cats_simplex_whisker_t simplex;
 	cats_repeater_whisker_t repeater;
-	cats_node_info_whisker_t node_info;
+	cats_nodeinfo_whisker_t node_info;
 	uint8_t raw[255];
 } cats_whisker_data_t;
 
