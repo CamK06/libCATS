@@ -27,7 +27,7 @@ void test_identification()
     whisker->data.identification = data;
 
     uint8_t buf[whisker->len+2];
-    assert(cats_whisker_encode(whisker, buf) == CATS_SUCCESS);
+    assert(cats_whisker_encode(whisker, buf) != CATS_FAIL);
 
     free(whisker);
 
@@ -51,7 +51,7 @@ void test_timestamp()
     memcpy(whisker->data.raw, &timestamp, 5);
 
     uint8_t buf[whisker->len+2];
-    assert(cats_whisker_encode(whisker, buf) == CATS_SUCCESS);
+    assert(cats_whisker_encode(whisker, buf) != CATS_FAIL);
 
     free(whisker);
 
@@ -81,7 +81,7 @@ void test_gps()
     whisker->data.gps = data;
 
     uint8_t buf[whisker->len+2];
-    assert(cats_whisker_encode(whisker, buf) == CATS_SUCCESS);
+    assert(cats_whisker_encode(whisker, buf) != CATS_FAIL);
 
     free(whisker);
 
@@ -108,7 +108,7 @@ void test_comment()
     strcpy(whisker->data.raw, text);
 
     uint8_t* buf = malloc(whisker->len+2);
-    assert(cats_whisker_encode(whisker, buf) == CATS_SUCCESS);
+    assert(cats_whisker_encode(whisker, buf) != CATS_FAIL);
 
     free(whisker);
 
@@ -149,7 +149,6 @@ void test_route()
     assert(data.max_digipeats == 3);
     assert(strcmp(hop->callsign, "VE3KCN") == 0);
     assert(hop->hop_type == 0xFF);
-    printf("RSSI: %ddBm\n", hop->rssi);
     assert(hop->rssi == -69);
     assert(hop->ssid == 7);
     assert(hop->next != NULL);
@@ -188,7 +187,7 @@ void test_destination()
     whisker->data.destination = data;
 
     uint8_t buf[whisker->len+2];
-    assert(cats_whisker_encode(whisker, buf) == CATS_SUCCESS);
+    assert(cats_whisker_encode(whisker, buf) != CATS_FAIL);
 
     free(whisker);
 
@@ -216,7 +215,7 @@ void test_simplex()
     whisker->data.simplex = data;
 
     uint8_t buf[whisker->len+2];
-    assert(cats_whisker_encode(whisker, buf) == CATS_SUCCESS);
+    assert(cats_whisker_encode(whisker, buf) != CATS_FAIL);
 
     free(whisker);
 
@@ -249,7 +248,7 @@ void test_repeater()
     whisker->data.repeater = data;
 
     uint8_t buf[whisker->len+2];
-    assert(cats_whisker_encode(whisker, buf) == CATS_SUCCESS);
+    assert(cats_whisker_encode(whisker, buf) != CATS_FAIL);
 
     free(whisker);
 
@@ -271,13 +270,13 @@ void test_repeater()
 
 int main()
 {
-    //test_identification();
-    //test_timestamp();
-    //test_gps();
-    //test_comment();
+    test_identification();
+    test_timestamp();
+    test_gps();
+    test_comment();
     test_route();
-    //test_destination();
-    //test_simplex();
-    //test_repeater();
+    test_destination();
+    test_simplex();
+    test_repeater();
     return 0;
 }
