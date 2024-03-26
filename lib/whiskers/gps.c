@@ -1,8 +1,11 @@
 #include "cats/whisker.h"
+#include "cats/packet.h"
+#include "cats/error.h"
 #include "cats/util.h"
 
 #include <stddef.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 size_t cats_gps_encode(const cats_whisker_data_t* data, uint8_t* dest)
 {
@@ -48,4 +51,39 @@ void cats_gps_decode(const uint8_t* data, size_t len, cats_whisker_data_t* dest)
     gps->longitude = int32_to_lon(lon);
     gps->altitude = float16_to_float32(alt);
     gps->speed = float16_to_float32(vel);
+}
+
+int cats_packet_get_gps(const cats_packet_t* pkt, cats_gps_whisker_t** out)
+{
+	cats_whisker_t** whiskers;
+	const int whiskers_found = cats_packet_find_whiskers(pkt, WHISKER_TYPE_GPS, &whiskers);
+	if(whiskers_found <= CATS_FAIL) {
+		throw_msg(WHISKER_NOT_FOUND, "cats_packet_get_gps: packet has no GPS whiskers!");
+	}
+	cats_whisker_t* whisker = *whiskers;
+	free(whiskers);
+
+	*out = &whisker->data.gps;
+
+	return CATS_SUCCESS;
+}
+
+int cats_packet_add_gps(cats_packet_t* pkt, double lat, double lon, float alt, uint8_t error, uint8_t heading, float speed)
+{
+	if(pkt->len + 2 + cats_whisker_base_len(WHISKER_TYPE_GPS) > CATS_MAX_PKT_LEN) {
+		throw(PACKET_TOO_BIG);
+	}
+	if(cats_packet_get_gps(pkt, NULL) != CATS_FAIL) {
+		throw(MAX_WHISKERS_OF_TYPE_EXCEEDED);
+	}
+
+	cats_gps_whisker_t gps;
+	gps.altitude = alt;
+	gps.heading = heading;
+	gps.speed = speed;
+	gps.max_error = error;
+	gps.latitude = lat;
+	gps.longitude = lon;
+
+	return cats_packet_add_whisker_data(pkt, WHISKER_TYPE_GPS, (cats_whisker_data_t*)&gps, cats_whisker_base_len(WHISKER_TYPE_GPS));
 }

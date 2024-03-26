@@ -1,4 +1,5 @@
 #include "cats/whisker.h"
+#include "cats/packet.h"
 #include "cats/error.h"
 #include "cats/util.h"
 
@@ -166,4 +167,31 @@ cats_route_whisker_t cats_route_new(uint8_t max_digipeats)
     route.max_digipeats = max_digipeats;
     
     return route;
+}
+
+int cats_packet_get_route(const cats_packet_t* pkt, cats_route_whisker_t** out)
+{
+	cats_whisker_t** whiskers;
+	const int whiskers_found = cats_packet_find_whiskers(pkt, WHISKER_TYPE_ROUTE, &whiskers);
+	if(whiskers_found <= CATS_FAIL) {
+		throw_msg(WHISKER_NOT_FOUND, "cats_packet_get_route: packet has no route whiskers!");
+	}
+	cats_whisker_t* whisker = *whiskers;
+	free(whiskers);
+	
+	*out = &whisker->data.route;
+
+	return CATS_SUCCESS;
+}
+
+int cats_packet_add_route(cats_packet_t* pkt, cats_route_whisker_t route)
+{
+	if(pkt->len + 2 + cats_whisker_base_len(WHISKER_TYPE_ROUTE) > CATS_MAX_PKT_LEN) {
+		throw(PACKET_TOO_BIG);
+	}
+	if(cats_packet_get_route(pkt, NULL) != CATS_FAIL) {
+		throw(MAX_WHISKERS_OF_TYPE_EXCEEDED);
+	}
+	
+	return cats_packet_add_whisker_data(pkt, WHISKER_TYPE_ROUTE, (cats_whisker_data_t*)&route, cats_whisker_base_len(WHISKER_TYPE_ROUTE) + route.len);
 }

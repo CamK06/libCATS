@@ -75,10 +75,12 @@ void test_encode_decode()
     assert(strcmp(comment, "Hello libCATS world!") == 0);
 
     // Decode destination
-    cats_packet_get_destination(pkt, (cats_destination_whisker_t**)&data);
-    assert(strcmp(data->destination.callsign, "VE3KCN") == 0);
-    assert(data->destination.ssid == 5);
-    assert(data->destination.ack == 0);
+    cats_destination_whisker_t** destinations;
+    cats_packet_get_destination(pkt, &destinations);
+    assert(strcmp(destinations[0]->callsign, "VE3KCN") == 0);
+    assert(destinations[0]->ssid == 5);
+    assert(destinations[0]->ack == 0);
+    free(destinations);
 
     // Decode GPS
     cats_packet_get_gps(pkt, (cats_gps_whisker_t**)&data);
@@ -90,21 +92,25 @@ void test_encode_decode()
     assert(fabs(data->gps.longitude-(-53.556391)) <= 0.0000001);
 
     // Decode repeater
-    cats_packet_get_repeater(pkt, (cats_repeater_whisker_t**)&data);
-    assert(data->repeater.downlink == 146520000);
-    assert(data->repeater.uplink == 147520000);
-    assert(fabs(data->repeater.latitude-47.57) < 0.01);
-    assert(fabs(data->repeater.longitude-(-53.55)) <= 0.01);
-    assert(data->repeater.modulation == MOD_FM);
-    assert(data->repeater.power == 200);
-    assert(data->repeater.tone == 1);
-    assert(strcmp(data->repeater.name, "VE3KCN-R") == 0);
+    cats_repeater_whisker_t** repeater;
+    cats_packet_get_repeater(pkt, &repeater);
+    assert(repeater[0]->downlink == 146520000);
+    assert(repeater[0]->uplink == 147520000);
+    assert(fabs(repeater[0]->latitude-47.57) < 0.01);
+    assert(fabs(repeater[0]->longitude-(-53.55)) <= 0.01);
+    assert(repeater[0]->modulation == MOD_FM);
+    assert(repeater[0]->power == 200);
+    assert(repeater[0]->tone == 1);
+    assert(strcmp(repeater[0]->name, "VE3KCN-R") == 0);
+    free(repeater);
 
     // Decode simplex
-    cats_packet_get_simplex(pkt, (cats_simplex_whisker_t**)&data);
-    assert(data->simplex.frequency == 14652000);
-    assert(data->simplex.modulation == MOD_FM);
-    assert(data->simplex.power == 5);
+    cats_simplex_whisker_t** simplex;
+    cats_packet_get_simplex(pkt, &simplex);
+    assert(simplex[0]->frequency == 14652000);
+    assert(simplex[0]->modulation == MOD_FM);
+    assert(simplex[0]->power == 5);
+    free(simplex);
 
     cats_packet_destroy(&pkt);
     free(buf);

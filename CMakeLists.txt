@@ -27,6 +27,7 @@ file(GLOB SOURCES lib/buffer.c
                 lib/whiskers/repeater.c
                 lib/whiskers/route.c
                 lib/whiskers/simplex.c
+                lib/whiskers/comment.c
 )
 add_library(CATS STATIC ${SOURCES})
 target_link_libraries(CATS ${CMAKE_SOURCE_DIR}/liblabrador_ldpc/liblabrador_ldpc.a) # Todo make this less stupid
