@@ -89,7 +89,7 @@ struct nodeinfo_i32 {
 
 typedef struct cats_ident_whisker {
 	uint16_t icon;
-	uint8_t callsign[252]; // 252 = 255 - icon - ssid
+	char callsign[252]; // 252 = 255 - icon - ssid
 	uint8_t ssid;
 } cats_ident_whisker_t;
 
