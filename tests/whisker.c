@@ -313,6 +313,8 @@ void test_nodeinfo()
     assert(info.hardware_id.val == 7408);
     assert(info.tx_power.val == 30);
     assert(info.voltage.val = 12.8);
+
+    free(whisker);
 }
 
 int main()

@@ -37,6 +37,8 @@ void test_decode()
     int r = cats_packet_decode(pkt, buf, 68);
     
     assert(r == CATS_SUCCESS);
+
+    cats_packet_destroy(&pkt);
 }
 
 void test_encode_decode()
@@ -121,6 +123,7 @@ void test_encode_decode()
     cats_whisker_t** arbitrary;
     cats_packet_get_arbitrary(pkt, &arbitrary);
     assert(strcmp(arbitrary[0]->data.raw, "Arbitrary testing") == 0);
+    free(arbitrary);
 
     cats_packet_destroy(&pkt);
     free(buf);
@@ -128,8 +131,8 @@ void test_encode_decode()
 
 void test_long_comment()
 {
-    uint8_t* comment = malloc(512);
-    uint8_t* expect = malloc(512);
+    uint8_t* comment = calloc(512, 1);
+    uint8_t* expect = calloc(512, 1);
     uint8_t text[] = "This is a test of a really long comment that requires splitting into two separate comment whiskers aaabbcccdeeeefff";
     for(int i = 0; i < 3; i++) {
         memcpy(comment + (i * strlen(text)), text, strlen(text));
@@ -154,6 +157,8 @@ void test_long_comment()
 
     cats_packet_destroy(&pkt);
     free(buf);
+    free(comment);
+    free(expect);
 }
 
 void test_should_digipeat()
