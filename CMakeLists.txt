@@ -38,7 +38,7 @@ FetchContent_Declare(
     GIT_TAG v0.4
 )
 FetchContent_MakeAvailable(Corrosion)
-corrosion_import_crate(MANIFEST_PATH ${CMAKE_SOURCE_DIR}/labrador-ldpc/capi/Cargo.toml NO_STD PROFILE release)
+corrosion_import_crate(MANIFEST_PATH ${CMAKE_CURRENT_SOURCE_DIR}/labrador-ldpc/capi/Cargo.toml NO_STD PROFILE release)
 
 target_link_libraries(CATS labrador_ldpc)
 target_include_directories(CATS PUBLIC include labrador-ldpc/capi/include)
