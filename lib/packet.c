@@ -217,6 +217,11 @@ bool cats_packet_should_digipeat(const cats_packet_t* pkt, const char* callsign,
 		else if(hop->hop_type == CATS_ROUTE_INET) {
 			felinet_hops++;
 		}
+		else if(hop->hop_type == CATS_ROUTE_PAST) {
+			if(strcmp(hop->callsign, callsign) == 0 && hop->ssid == ssid) {
+				return false; // We've already digipeated this packet
+			}
+		}
 		hop = hop->next;
 	}
 
