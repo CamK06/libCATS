@@ -62,12 +62,12 @@ double int16_to_lon(int16_t lon)
     return -(double)lon / (float)(1 << 15) * 180;
 }
 
-uint8_t cats_rssi_encode(int16_t rssi)
+uint8_t cats_rssi_encode(float rssi)
 {
     return (1.5 * rssi) + 240;
 }
 
-int16_t cats_rssi_decode(uint8_t rssi)
+float cats_rssi_decode(uint8_t rssi)
 {
-    return (rssi - 240) / 1.5;
+    return (rssi - 240) / 1.5f;
 }

@@ -105,7 +105,7 @@ typedef struct cats_gps_whisker {
 typedef struct cats_route_hop {
 	uint8_t hop_type;
 	uint8_t ssid;
-	int16_t rssi;
+	float rssi;
 	uint8_t callsign[16];
 	struct cats_route_hop* next;
 } cats_route_hop_t;
@@ -177,7 +177,7 @@ int cats_whisker_base_len(const cats_whisker_type_t type);
 cats_whisker_t* cats_whisker_new();
 
 cats_route_hop_t* cats_route_add_future_hop(cats_route_whisker_t* route, const char* callsign, uint8_t ssid);
-cats_route_hop_t* cats_route_add_past_hop(cats_route_whisker_t* route, const char* callsign, uint8_t ssid, uint16_t rssi);
+cats_route_hop_t* cats_route_add_past_hop(cats_route_whisker_t* route, const char* callsign, uint8_t ssid, float rssi);
 cats_route_hop_t* cats_route_add_inet_hop(cats_route_whisker_t* route);
 void cats_route_destroy(cats_route_whisker_t* route);
 cats_route_whisker_t cats_route_new(uint8_t max_digipeats);
