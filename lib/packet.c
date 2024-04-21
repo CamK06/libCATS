@@ -198,8 +198,18 @@ int cats_packet_find_whiskers(const cats_packet_t* pkt, cats_whisker_type_t type
 bool cats_packet_should_digipeat(const cats_packet_t* pkt, const char* callsign, uint16_t ssid)
 {
 	assert(pkt != NULL);
+	
+	cats_ident_whisker_t* ident;
+	int r = cats_packet_get_identification(pkt, &ident);
+	if(r == CATS_FAIL) {
+		return false; // No identification; something is wrong(?)
+	}
+	if(strcmp(ident->callsign, callsign) == 0 && ident->ssid == ssid) {
+		return false; // This packet originated from us; don't digipeat
+	}
+	
 	cats_route_whisker_t* route;
-	int r = cats_packet_get_route(pkt, &route);
+	r = cats_packet_get_route(pkt, &route);
 	if(r == CATS_FAIL) {
 		return false; // No route found; don't digipeat
 	}
