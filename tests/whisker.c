@@ -125,7 +125,7 @@ void test_route()
     static uint8_t expect[] = { 0x4, 0x1b, 0x3, 0x56, 0x45, 0x33, 0x4b, 0x43, 0x4e, 0xff, 0x7, 0x88, 0x56, 0x45, 0x32, 0x44,
                                 0x45, 0x46, 0xfd, 0xea, 0x56, 0x45, 0x33, 0x58, 0x59, 0x5a, 0xfd };
     cats_route_whisker_t data = cats_route_new(3);
-    cats_route_add_past_hop(&data, "VE3KCN", 7, -69);
+    cats_route_add_past_hop(&data, "VE3KCN", 7, -69.0f);
     cats_route_add_future_hop(&data, "VE2DEF", 234);
     cats_route_add_future_hop(&data, "VE3XYZ", 14);
     cats_route_add_inet_hop(&data);
@@ -149,7 +149,7 @@ void test_route()
     assert(data.max_digipeats == 3);
     assert(strcmp(hop->callsign, "VE3KCN") == 0);
     assert(hop->hop_type == 0xFF);
-    assert(hop->rssi == -69);
+    assert(abs(hop->rssi-(-69.0f)) < 0.1f);
     assert(hop->ssid == 7);
     assert(hop->next != NULL);
     hop = hop->next;

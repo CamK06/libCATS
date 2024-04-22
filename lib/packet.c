@@ -222,10 +222,7 @@ bool cats_packet_should_digipeat(const cats_packet_t* pkt, const char* callsign,
 	
 	cats_ident_whisker_t* ident;
 	int r = cats_packet_get_identification(pkt, &ident);
-	if(r == CATS_FAIL) {
-		return false; // No identification; something is wrong(?)
-	}
-	if(strcmp(ident->callsign, callsign) == 0 && ident->ssid == ssid) {
+	if(r != CATS_FAIL && strcmp(ident->callsign, callsign) == 0 && ident->ssid == ssid) {
 		return false; // This packet originated from us; don't digipeat
 	}
 	
