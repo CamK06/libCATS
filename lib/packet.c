@@ -48,7 +48,7 @@ int cats_packet_destroy(cats_packet_t** pkt)
 	return CATS_SUCCESS;
 }
 
-uint16_t cats_packet_encode(const cats_packet_t* pkt, uint8_t* out)
+uint16_t cats_packet_semi_encode(const cats_packet_t* pkt, uint8_t* out)
 {
 	assert(out != NULL);
 	assert(pkt != NULL);
@@ -69,6 +69,15 @@ uint16_t cats_packet_encode(const cats_packet_t* pkt, uint8_t* out)
 	out[written++] = crc;
 	out[written++] = crc >> 8;
 
+	return written;
+}
+
+uint16_t cats_packet_encode(const cats_packet_t* pkt, uint8_t* out)
+{
+	assert(out != NULL);
+	assert(pkt != NULL);
+	uint16_t written = cats_packet_semi_encode(pkt, out);
+
 	// 3. Whiten
 	cats_whiten(out, written);
 
@@ -80,6 +89,33 @@ uint16_t cats_packet_encode(const cats_packet_t* pkt, uint8_t* out)
 
 	assert(written <= CATS_MAX_PKT_LEN);
 	return written;
+}
+
+int cats_packet_semi_decode(cats_packet_t* pkt, uint8_t* buf, size_t buf_len)
+{
+	assert(pkt != NULL);
+	assert(buf != NULL);
+	assert(buf_len <= CATS_MAX_PKT_LEN);
+	int len = buf_len;
+
+	// 4. CRC checksum
+	const uint16_t crc_actual = cats_crc16(buf, len - 2);
+	const uint16_t crc_expect = (buf[len-1] << 8) | buf[len - 2];
+	if(crc_actual != crc_expect)
+		throw(INVALID_CRC);
+
+	// 5. Whiskers
+	for(int i = 0; i < len - 2; i += 2) {
+		const uint8_t whisker_len = buf[i + 1];
+		
+		cats_whisker_t whisker;
+		cats_whisker_decode(&buf[i], &whisker);
+		cats_packet_add_whisker(pkt, &whisker);
+
+		i += whisker_len;
+	}
+
+	return CATS_SUCCESS;
 }
 
 int cats_packet_decode(cats_packet_t* pkt, uint8_t* buf, size_t buf_len)
@@ -101,22 +137,7 @@ int cats_packet_decode(cats_packet_t* pkt, uint8_t* buf, size_t buf_len)
 	// 3. Dewhiten
 	cats_whiten(buf, len);
 
-	// 4. CRC checksum
-	const uint16_t crc_actual = cats_crc16(buf, len - 2);
-	const uint16_t crc_expect = (buf[len-1] << 8) | buf[len - 2];
-	if(crc_actual != crc_expect)
-		throw(INVALID_CRC);
-
-	// 5. Whiskers
-	for(int i = 0; i < len - 2; i += 2) {
-		const uint8_t whisker_len = buf[i + 1];
-		
-		cats_whisker_t whisker;
-		cats_whisker_decode(&buf[i], &whisker);
-		cats_packet_add_whisker(pkt, &whisker);
-
-		i += whisker_len;
-	}
+	cats_packet_semi_decode(pkt, buf, len);
 
 	return CATS_SUCCESS;
 }

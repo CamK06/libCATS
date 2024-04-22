@@ -25,7 +25,9 @@ int cats_packet_prepare(cats_packet_t** pkt);
 int cats_packet_destroy(cats_packet_t** pkt);
 
 // Returns number of bytes written
+uint16_t cats_packet_semi_encode(const cats_packet_t* pkt, uint8_t* out);
 uint16_t cats_packet_encode(const cats_packet_t* pkt, uint8_t* out);
+int cats_packet_semi_decode(cats_packet_t* pkt, uint8_t* buf, size_t buf_len);
 int cats_packet_decode(cats_packet_t* pkt, uint8_t* buf, size_t buf_len);
 
 int cats_packet_add_identification(cats_packet_t* pkt, const char* callsign, uint8_t ssid, uint16_t icon);
