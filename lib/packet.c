@@ -20,7 +20,7 @@ int cats_packet_prepare(cats_packet_t** pkt)
 	}
 
 	(*pkt)->len = 0;
-	(*pkt)->numWhiskers = 0;
+	(*pkt)->num_whiskers = 0;
 	(*pkt)->whiskers = NULL;
 
 	return CATS_SUCCESS;
@@ -68,6 +68,8 @@ uint16_t cats_packet_encode(const cats_packet_t* pkt, uint8_t* out)
 	const uint16_t crc = cats_crc16(out, written);
 	out[written++] = crc;
 	out[written++] = crc >> 8;
+
+	return written;
 
 	// 3. Whiten
 	cats_whiten(out, written);
@@ -149,7 +151,7 @@ int cats_packet_add_whisker(cats_packet_t* pkt, const cats_whisker_t* whisker)
 	}
 	
 	pkt->len += whisker->len + 2;
-	pkt->numWhiskers++;
+	pkt->num_whiskers++;
 
 	memcpy(node, whisker, sizeof(cats_whisker_t));
 	node->next = NULL;

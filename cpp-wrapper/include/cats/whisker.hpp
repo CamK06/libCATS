@@ -16,8 +16,15 @@ class Whisker
 {
 public:
     Whisker() {
-
+        this->len = 0; // We can always check if len != 0 to see if whisker is valid
     }
+
+    Whisker(cats_whisker_data_t data, cats_whisker_type_t type, size_t len) {
+        this->data = data;
+        this->type = type;
+        this->len = len;
+    }
+
     ~Whisker() {
         
     }
@@ -31,6 +38,9 @@ public:
     cats_whisker_data_t* get_data() {
         return &data;
     }
+    bool is_valid() {
+        return len > 0;
+    }
 
 protected:
     size_t len;
@@ -41,6 +51,17 @@ protected:
 class Identification : public Whisker
 {
 public:
+    Identification(Whisker whisker) {
+        if(whisker.get_type() == WHISKER_TYPE_IDENTIFICATION) {
+            this->type = WHISKER_TYPE_IDENTIFICATION;
+            this->len = whisker.get_len();
+            this->ident = &(this->data.identification);
+        }
+        else {
+            this->len = 0;
+        }
+    }
+
     Identification(std::string callsign = "", int icon = 0, uint8_t ssid = 0) {
         this->type = WHISKER_TYPE_IDENTIFICATION;
         this->ident = &(this->data.identification);
@@ -57,7 +78,7 @@ public:
     int get_icon() {
         return this->ident->icon;
     }
-    uint8_t get_ssid() {
+    int get_ssid() {
         return this->ident->ssid;
     }
 

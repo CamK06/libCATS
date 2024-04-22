@@ -16,5 +16,10 @@ int main()
 		printf("%X ", buf[i]);
 	}
 	printf("\n");
+
+	CATS::Packet decode;
+	decode.from_buf(buf, len);
+	CATS::Identification ident = decode.get_identification();
+	std::cout << ident.get_callsign() << "-" << ident.get_ssid() << " [ICON: " << ident.get_icon() << "]" << std::endl;
 	return 0;
 }

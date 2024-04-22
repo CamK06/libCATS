@@ -11,7 +11,7 @@
 
 typedef struct cats_packet_t {
     uint8_t len;
-    uint8_t numWhiskers;
+    uint8_t num_whiskers;
     cats_whisker_t* whiskers;
 } cats_packet_t;
 
