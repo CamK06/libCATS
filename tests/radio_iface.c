@@ -18,18 +18,26 @@ void test_encode_decode()
     cats_packet_add_identification(pkt, "VE3KCN", 7, 0);
     cats_packet_add_comment(pkt, "Testing 123 abc!");
 
-    // Encode the packet into buf
+    // Semi-Encode the CATS packet
     uint8_t buf[CATS_MAX_PKT_LEN];
-    uint16_t len = cats_radio_iface_encode(pkt, -23.2f, buf);
+    uint16_t len = cats_packet_semi_encode(pkt, buf);
+
+    // Encode the CBOR data
+    len = cats_radio_iface_encode(buf, len, -23.2f);
     cats_packet_destroy(&pkt);
     assert(len == 35);
     assert(pkt == NULL);
     
     // Decode the packet into pkt and rssi
     float rssi = 0;
-    cats_packet_prepare(&pkt);
-    assert(cats_radio_iface_decode(pkt, buf, len, &rssi) == CATS_SUCCESS);
+    uint8_t decode_buf[CATS_MAX_PKT_LEN];
+    len = cats_radio_iface_decode(buf, len, &rssi);
+    assert(len > 0);
     assert((rssi - 23.2f) < 0.1f);
+
+    // Decode the CATS packet
+    cats_packet_prepare(&pkt);
+    assert(cats_packet_semi_decode(pkt, buf, len) == CATS_SUCCESS);
 
     // Decode the identification
     cats_whisker_data_t* data;
