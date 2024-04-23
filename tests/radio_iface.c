@@ -29,6 +29,7 @@ void test_encode_decode()
     float rssi = 0;
     cats_packet_prepare(&pkt);
     assert(cats_radio_iface_decode(pkt, buf, len, &rssi) == CATS_SUCCESS);
+    assert((rssi - 23.2f) < 0.1f);
 
     // Decode the identification
     cats_whisker_data_t* data;
