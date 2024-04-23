@@ -30,12 +30,19 @@ add_library(CATS STATIC ${SOURCES})
 
 include(FetchContent)
 FetchContent_Declare(
+    labrador_ldpc
+    GIT_REPOSITORY https://github.com/adamgreig/labrador-ldpc.git
+    GIT_TAG v1.2.1
+)
+FetchContent_MakeAvailable(labrador_ldpc)
+
+FetchContent_Declare(
     Corrosion
     GIT_REPOSITORY https://github.com/corrosion-rs/corrosion.git
     GIT_TAG v0.4
 )
 FetchContent_MakeAvailable(Corrosion)
-corrosion_import_crate(MANIFEST_PATH ${CMAKE_CURRENT_SOURCE_DIR}/labrador-ldpc/capi/Cargo.toml NO_STD PROFILE release)
+corrosion_import_crate(MANIFEST_PATH ${labrador_ldpc_SOURCE_DIR}/capi/Cargo.toml NO_STD PROFILE release)
 
 if(OPT_BUILD_RADIO_IFACE)
     FetchContent_Declare(cbor
@@ -55,5 +62,5 @@ if(OPT_BUILD_TESTS)
 endif(OPT_BUILD_TESTS)
 
 target_link_libraries(CATS labrador_ldpc)
-target_include_directories(CATS PUBLIC include labrador-ldpc/capi/include)
+target_include_directories(CATS PUBLIC include ${labrador_ldpc_SOURCE_DIR}/capi/include)
 set_property(TARGET CATS PROPERTY C_STANDARD 11)
