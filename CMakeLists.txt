@@ -1,12 +1,8 @@
 cmake_minimum_required(VERSION 3.19)
 project(libCATS)
 
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-    include(CTest)
-    if(BUILD_TESTS)
-        add_subdirectory(tests)
-    endif()
-endif()
+option(OPT_BUILD_TESTS OFF)
+option(OPT_BUILD_RADIO_IFACE OFF)
 
 file(GLOB SOURCES lib/buffer.c
                 lib/error.c
@@ -18,6 +14,7 @@ file(GLOB SOURCES lib/buffer.c
                 lib/whisker.c
                 lib/whitener.c
                 lib/util.c
+                lib/radio_iface.c
                 lib/whiskers/destination.c
                 lib/whiskers/gps.c
                 lib/whiskers/identification.c
@@ -40,7 +37,23 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(Corrosion)
 corrosion_import_crate(MANIFEST_PATH ${CMAKE_CURRENT_SOURCE_DIR}/labrador-ldpc/capi/Cargo.toml NO_STD PROFILE release)
 
+if(OPT_BUILD_RADIO_IFACE)
+    FetchContent_Declare(cbor
+                          GIT_REPOSITORY https://github.com/libmcu/cbor.git
+                          GIT_TAG main
+    )
+    FetchContent_MakeAvailable(cbor)
+    target_link_libraries(CATS cbor)
+    add_definitions(-DBUILD_RADIO_IFACE)
+endif(OPT_BUILD_RADIO_IFACE)
+
+if(OPT_BUILD_TESTS)
+    if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+        include(CTest)        
+        add_subdirectory(tests)
+    endif()
+endif(OPT_BUILD_TESTS)
+
 target_link_libraries(CATS labrador_ldpc)
 target_include_directories(CATS PUBLIC include labrador-ldpc/capi/include)
-
 set_property(TARGET CATS PROPERTY C_STANDARD 11)

@@ -44,6 +44,7 @@ int cats_packet_destroy(cats_packet_t** pkt)
 	}
 	(*pkt)->whiskers = NULL;
 	free(*pkt);
+	(*pkt) = NULL;
 
 	return CATS_SUCCESS;
 }
@@ -101,8 +102,9 @@ int cats_packet_semi_decode(cats_packet_t* pkt, uint8_t* buf, size_t buf_len)
 	// 4. CRC checksum
 	const uint16_t crc_actual = cats_crc16(buf, len - 2);
 	const uint16_t crc_expect = (buf[len-1] << 8) | buf[len - 2];
-	if(crc_actual != crc_expect)
+	if(crc_actual != crc_expect) {
 		throw(INVALID_CRC);
+	}
 
 	// 5. Whiskers
 	for(int i = 0; i < len - 2; i += 2) {

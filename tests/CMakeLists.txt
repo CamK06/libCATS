@@ -26,6 +26,12 @@ add_executable(cats cats.c)
 target_include_directories(cats PUBLIC include)
 target_link_libraries(cats PUBLIC CATS)
 
+if(OPT_BUILD_RADIO_IFACE)
+    add_executable(radio_iface radio_iface.c)
+    target_include_directories(radio_iface PUBLIC include)
+    target_link_libraries(radio_iface PUBLIC CATS)
+endif(OPT_BUILD_RADIO_IFACE)
+
 # Run tests
 add_test(NAME Interleaver
          COMMAND interleaver)
@@ -50,3 +56,9 @@ set_property(TEST Whitener PROPERTY WILL_FAIL Whitener)
 add_test(NAME CATS
          COMMAND cats)
 set_property(TEST CATS PROPERTY WILL_FAIL CATS)
+
+if(OPT_BUILD_RADIO_IFACE)
+    add_test(NAME RadioInterface
+        COMMAND radio_iface)
+    set_property(TEST RadioInterface PROPERTY WILL_FAIL RadioInterface)
+endif(OPT_BUILD_RADIO_IFACE)
