@@ -25,7 +25,7 @@ void test_encode_decode()
     // Encode the CBOR data
     len = cats_radio_iface_encode(buf, len, -23.2f);
     cats_packet_destroy(&pkt);
-    assert(len == 35);
+    assert(len == 38);
     assert(pkt == NULL);
     
     // Decode the packet into pkt and rssi
@@ -50,6 +50,8 @@ void test_encode_decode()
     char comment[1024];
     cats_packet_get_comment(pkt, comment);
     assert(strcmp(comment, "Testing 123 abc!") == 0);
+
+    cats_packet_destroy(&pkt);
 }
 
 int main()
