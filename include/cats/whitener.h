@@ -4,6 +4,9 @@
 #include <stdint.h>
 #include <stddef.h>
 
+/// @brief Whiten/dewhiten the supplied data as per the CATS standard
+/// @param data Input and output buffer
+/// @param len 
 void cats_whiten(uint8_t* data, size_t len);
 
 #endif // CATS_WHITENER_H
