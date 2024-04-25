@@ -15,19 +15,62 @@ typedef struct cats_packet_t {
     cats_whisker_t* whiskers;
 } cats_packet_t;
 
-/*
-Initialize a cats_packet_t pointer
-
-Must be called before any functions using cats_packet_t
-pkt MUST NOT already be allocated, otherwise it will leak memory
+/**
+ * @brief Initialize a `cats_packet_t` pointer
+ * 
+ * @return `CATS_SUCCESS` on success, `CATS_FAIL` on failure
+ * 
+ * @note Must be called before any functions using `cats_packet_t`
+ * @note `pkt` MUST NOT already be allocated, otherwise it will leak memory
 */
 int cats_packet_prepare(cats_packet_t** pkt);
+
+/**
+ * @brief Deinitialize a packet
+ * 
+ * @note NEVER call free() directly on a `cats_packet_t` pointer, this can result in memory leaks due to whiskers not being properly deallocated.
+ * @note Always use this function to free a `cats_packet_t` pointer
+ */
 int cats_packet_destroy(cats_packet_t** pkt);
 
-// Returns number of bytes written
+/**
+ * @brief Semi-encode a CATS packet; only pass through the Whisker and CRC portion of the CATS pipeline. Used for FELINET and radio interfacing.
+ * 
+ * @param out Output buffer 
+ * @return Length of data written to `out`
+ */
 uint16_t cats_packet_semi_encode(const cats_packet_t* pkt, uint8_t* out);
+
+/**
+ * @brief Encode a CATS packet
+ * 
+ * @param out Output buffer 
+ * @return Length of data written to `out`
+ */
 uint16_t cats_packet_encode(const cats_packet_t* pkt, uint8_t* out);
+
+/**
+ * @brief Decode a semi-encoded CATS packet
+ * 
+ * @param pkt Packet to decode into
+ * @param buf Input buffer
+ * @param buf_len Length of input buffer
+ * @return `CATS_SUCCESS` on success, `CATS_FAIL` on failure
+ * 
+ * @note `pkt` MUST be prepared before calling this function
+ */
 int cats_packet_semi_decode(cats_packet_t* pkt, uint8_t* buf, size_t buf_len);
+
+/**
+ * @brief Decode a CATS packet
+ * 
+ * @param pkt Packet to decode into
+ * @param buf Input buffer
+ * @param buf_len Length of input buffer
+ * @return `CATS_SUCCESS` on success, `CATS_FAIL` on failure
+ * 
+ * @note `pkt` MUST be prepared before calling this function
+ */
 int cats_packet_decode(cats_packet_t* pkt, uint8_t* buf, size_t buf_len);
 
 int cats_packet_add_identification(cats_packet_t* pkt, const char* callsign, uint8_t ssid, uint16_t icon);

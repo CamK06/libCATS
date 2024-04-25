@@ -9,6 +9,11 @@
 #define throw(err) do { cats_throw_err(err, #err); return CATS_FAIL; } while(0)
 #define throw_msg(err, msg) do { cats_throw_err(err, #err " " msg); return CATS_FAIL; } while(0)
 
+/**
+ * @brief Error codes for libCATS
+ *
+ * @note These are not to be used directly as return values; use throw() instead. Errors can be retrieved from cats_error.
+*/
 typedef enum {
     MALLOC_FAIL,
     UNSUPPORTED_WHISKER,
@@ -23,10 +28,19 @@ typedef enum {
     MAX_WHISKERS_OF_TYPE_EXCEEDED
 } cats_error_t;
 
-extern cats_error_t cats_error; // Most recent error thrown by libCATS
-extern char cats_error_str[255]; // Error string for the most recent error thrown by libCATS
+/**
+ * @brief The most recent error thrown by libCATS
+*/
+extern cats_error_t cats_error;
 
-// Not to be used directly; use throw() instead
+/**
+ * @brief Error string for the most recent error thrown by libCATS
+*/
+extern char cats_error_str[255];
+
+/**
+ * @brief Do NOT use this function directly, use throw() instead.
+*/
 void cats_throw_err(cats_error_t error, const char* msg);
 
 #endif // CATS_ERROR_H
