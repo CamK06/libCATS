@@ -1,3 +1,8 @@
+/** @file packet.c
+ * 
+ * @brief CATS packet handling functions
+*/
+
 #include "cats/interleaver.h"
 #include "cats/whitener.h"
 #include "cats/packet.h"
