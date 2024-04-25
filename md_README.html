@@ -85,18 +85,21 @@ Examples</h1>
 <p>Creating a simple packet with a callsign and comment: </p><div class="fragment"><div class="line">uint8_t* buf = NULL;</div>
 <div class="line"><a class="code hl_struct" href="structcats__packet__t.html">cats_packet_t</a>* pkt;</div>
 <div class="line"> </div>
-<div class="line">cats_packet_prepare(&amp;pkt); <span class="comment">// Initialize pkt</span></div>
-<div class="line">cats_packet_add_identification(pkt, <span class="stringliteral">&quot;VE3KCN&quot;</span>, 7, 1); <span class="comment">// Add an ID with callsign VE3KCN-7 and a logo of 1</span></div>
-<div class="line">cats_packet_add_comment(pkt, <span class="stringliteral">&quot;Hello libCATS world!&quot;</span>); <span class="comment">// Self explanatory; Add a comment whisker</span></div>
+<div class="line"><a class="code hl_function" href="packet_8h.html#ad911c6612fe91e413698c3752bee488b">cats_packet_prepare</a>(&amp;pkt); <span class="comment">// Initialize pkt</span></div>
+<div class="line"><a class="code hl_function" href="packet_8h.html#afce4c9310889adc1a1a60af61f9e3795">cats_packet_add_identification</a>(pkt, <span class="stringliteral">&quot;VE3KCN&quot;</span>, 7, 1); <span class="comment">// Add an ID with callsign VE3KCN-7 and a logo of 1</span></div>
+<div class="line"><a class="code hl_function" href="packet_8h.html#a73b72a0bec0fc3ebd8b3fa31afb8ce63">cats_packet_add_comment</a>(pkt, <span class="stringliteral">&quot;Hello libCATS world!&quot;</span>); <span class="comment">// Self explanatory; Add a comment whisker</span></div>
 <div class="line"><span class="keywordtype">int</span> len = cats_packet_build(pkt, &amp;buf); <span class="comment">// Allocates buf automatically</span></div>
 <div class="line">free(pkt); <span class="comment">// Packet builder no longer needed</span></div>
-<div class="ttc" id="astructcats__packet__t_html"><div class="ttname"><a href="structcats__packet__t.html">cats_packet_t</a></div><div class="ttdef"><b>Definition</b> packet.h:12</div></div>
+<div class="ttc" id="apacket_8h_html_a73b72a0bec0fc3ebd8b3fa31afb8ce63"><div class="ttname"><a href="packet_8h.html#a73b72a0bec0fc3ebd8b3fa31afb8ce63">cats_packet_add_comment</a></div><div class="ttdeci">int cats_packet_add_comment(cats_packet_t *pkt, const char *comment)</div><div class="ttdoc">Add a comment whisker to a packet.</div><div class="ttdef"><b>Definition</b> comment.c:36</div></div>
+<div class="ttc" id="apacket_8h_html_ad911c6612fe91e413698c3752bee488b"><div class="ttname"><a href="packet_8h.html#ad911c6612fe91e413698c3752bee488b">cats_packet_prepare</a></div><div class="ttdeci">int cats_packet_prepare(cats_packet_t **pkt)</div><div class="ttdoc">Initialize a cats_packet_t pointer.</div><div class="ttdef"><b>Definition</b> packet.c:15</div></div>
+<div class="ttc" id="apacket_8h_html_afce4c9310889adc1a1a60af61f9e3795"><div class="ttname"><a href="packet_8h.html#afce4c9310889adc1a1a60af61f9e3795">cats_packet_add_identification</a></div><div class="ttdeci">int cats_packet_add_identification(cats_packet_t *pkt, const char *callsign, uint8_t ssid, uint16_t icon)</div><div class="ttdoc">Add an identification whisker to a packet.</div><div class="ttdef"><b>Definition</b> identification.c:48</div></div>
+<div class="ttc" id="astructcats__packet__t_html"><div class="ttname"><a href="structcats__packet__t.html">cats_packet_t</a></div><div class="ttdoc">CATS packet structure.</div><div class="ttdef"><b>Definition</b> packet.h:21</div></div>
 </div><!-- fragment --><p>Decoding a packet and reading the identification and comment fields: </p><div class="fragment"><div class="line">uint8_t* buf = ... <span class="comment">// Buffer with the received packet</span></div>
 <div class="line"><a class="code hl_struct" href="structcats__packet__t.html">cats_packet_t</a>* pkt;</div>
 <div class="line"> </div>
-<div class="line">cats_packet_prepare(&amp;pkt);</div>
+<div class="line"><a class="code hl_function" href="packet_8h.html#ad911c6612fe91e413698c3752bee488b">cats_packet_prepare</a>(&amp;pkt);</div>
 <div class="line"><span class="keywordflow">if</span>(!cats_packet_from_buf(pkt, buf, bufLen)) {</div>
-<div class="line">    fprintf(stderr, cats_error_str);</div>
+<div class="line">    fprintf(stderr, <a class="code hl_variable" href="error_8h.html#aac3e3c02d0bd8f4249067b7689e1acb5">cats_error_str</a>);</div>
 <div class="line">    <span class="keywordflow">return</span> -1; <span class="comment">// Decode failed</span></div>
 <div class="line">}</div>
 <div class="line"> </div>
@@ -104,11 +107,14 @@ Examples</h1>
 <div class="line"><span class="keywordtype">char</span> callsign[255];</div>
 <div class="line">uint8_t ssid;</div>
 <div class="line">uint16_t icon;</div>
-<div class="line">cats_packet_get_identification(pkt, callsign, &amp;ssid, &amp;icon);</div>
-<div class="line">cats_packet_get_comment(pkt, comment);</div>
+<div class="line"><a class="code hl_function" href="packet_8h.html#a9c74be178ecda1115566f92321625216">cats_packet_get_identification</a>(pkt, callsign, &amp;ssid, &amp;icon);</div>
+<div class="line"><a class="code hl_function" href="packet_8h.html#a921161c92ffb77767fb5fa070ee5c442">cats_packet_get_comment</a>(pkt, comment);</div>
 <div class="line"> </div>
 <div class="line">free(buf);</div>
 <div class="line">free(pkt);</div>
+<div class="ttc" id="aerror_8h_html_aac3e3c02d0bd8f4249067b7689e1acb5"><div class="ttname"><a href="error_8h.html#aac3e3c02d0bd8f4249067b7689e1acb5">cats_error_str</a></div><div class="ttdeci">char cats_error_str[255]</div><div class="ttdoc">Error string for the most recent error thrown by libCATS.</div><div class="ttdef"><b>Definition</b> error.c:7</div></div>
+<div class="ttc" id="apacket_8h_html_a921161c92ffb77767fb5fa070ee5c442"><div class="ttname"><a href="packet_8h.html#a921161c92ffb77767fb5fa070ee5c442">cats_packet_get_comment</a></div><div class="ttdeci">int cats_packet_get_comment(const cats_packet_t *pkt, char *out)</div><div class="ttdoc">Get the comment whisker from a packet.</div><div class="ttdef"><b>Definition</b> comment.c:9</div></div>
+<div class="ttc" id="apacket_8h_html_a9c74be178ecda1115566f92321625216"><div class="ttname"><a href="packet_8h.html#a9c74be178ecda1115566f92321625216">cats_packet_get_identification</a></div><div class="ttdeci">int cats_packet_get_identification(const cats_packet_t *pkt, cats_ident_whisker_t **out)</div><div class="ttdoc">Get the identification whisker from a packet.</div><div class="ttdef"><b>Definition</b> identification.c:32</div></div>
 </div><!-- fragment --><h1><a class="anchor" id="autotoc_md3"></a>
 Contributing</h1>
 <p>Pull requests are VERY much welcome! I'm still a novice when it comes to writing pure C, so there's a lot that can be improved. </p>

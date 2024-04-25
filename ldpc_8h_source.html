@@ -83,17 +83,20 @@ $(function() { codefold.init(0); });
   <div class="headertitle"><div class="title">ldpc.h</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef CATS_LDPC_H</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define CATS_LDPC_H</span></div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;stdint.h&gt;</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;stddef.h&gt;</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keywordtype">size_t</span> cats_ldpc_encode(uint8_t* data, <span class="keywordtype">size_t</span> len);</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keywordtype">size_t</span> cats_ldpc_decode(uint8_t* buf, <span class="keywordtype">size_t</span> buf_len);</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">#endif </span><span class="comment">// CATS_LDPC_H</span></div>
+<a href="ldpc_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#ifndef CATS_LDPC_H</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#define CATS_LDPC_H</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;stdint.h&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;stddef.h&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keywordtype">size_t</span> <a class="code hl_function" href="ldpc_8h.html#af45d1eaf82fe1d61ccb0768733506711">cats_ldpc_encode</a>(uint8_t* data, <span class="keywordtype">size_t</span> len);</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keywordtype">size_t</span> <a class="code hl_function" href="ldpc_8h.html#a95ab5548a5a57d125598ab715f583ad4">cats_ldpc_decode</a>(uint8_t* buf, <span class="keywordtype">size_t</span> buf_len);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="preprocessor">#endif </span><span class="comment">// CATS_LDPC_H</span></div>
+<div class="ttc" id="aldpc_8h_html_a95ab5548a5a57d125598ab715f583ad4"><div class="ttname"><a href="ldpc_8h.html#a95ab5548a5a57d125598ab715f583ad4">cats_ldpc_decode</a></div><div class="ttdeci">size_t cats_ldpc_decode(uint8_t *buf, size_t buf_len)</div><div class="ttdoc">LDPC decode a buffer of data.</div><div class="ttdef"><b>Definition</b> ldpc.c:120</div></div>
+<div class="ttc" id="aldpc_8h_html_af45d1eaf82fe1d61ccb0768733506711"><div class="ttname"><a href="ldpc_8h.html#af45d1eaf82fe1d61ccb0768733506711">cats_ldpc_encode</a></div><div class="ttdeci">size_t cats_ldpc_encode(uint8_t *data, size_t len)</div><div class="ttdoc">LDPC encode a buffer of data.</div><div class="ttdef"><b>Definition</b> ldpc.c:89</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

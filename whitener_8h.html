@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.10.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>libCATS: cats_packet_t Struct Reference</title>
+<title>libCATS: include/cats/whitener.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -69,38 +69,64 @@ $(function() {
 </div>
 </div>
 
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_d4e793213497df1ac5e9150fb8a804ec.html">cats</a></li>  </ul>
+</div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#pub-attribs">Public Attributes</a> &#124;
-<a href="structcats__packet__t-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">cats_packet_t Struct Reference</div></div>
+<a href="#func-members">Functions</a>  </div>
+  <div class="headertitle"><div class="title">whitener.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>CATS packet structure.  
- <a href="#details">More...</a></p>
-
-<p><code>#include &lt;<a class="el" href="packet_8h_source.html">packet.h</a>&gt;</code></p>
+<p>Data whitener.  
+<a href="#details">More...</a></p>
+<div class="textblock"><code>#include &lt;stdint.h&gt;</code><br />
+<code>#include &lt;stddef.h&gt;</code><br />
+</div>
+<p><a href="whitener_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
-Public Attributes</h2></td></tr>
-<tr class="memitem:aa8fc88c2dfec777c5f56770cd6d77fe7" id="r_aa8fc88c2dfec777c5f56770cd6d77fe7"><td class="memItemLeft" align="right" valign="top"><a id="aa8fc88c2dfec777c5f56770cd6d77fe7" name="aa8fc88c2dfec777c5f56770cd6d77fe7"></a>
-uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>len</b></td></tr>
-<tr class="separator:aa8fc88c2dfec777c5f56770cd6d77fe7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7007e98437ff221a2a01baaa0e0cc683" id="r_a7007e98437ff221a2a01baaa0e0cc683"><td class="memItemLeft" align="right" valign="top"><a id="a7007e98437ff221a2a01baaa0e0cc683" name="a7007e98437ff221a2a01baaa0e0cc683"></a>
-uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>numWhiskers</b></td></tr>
-<tr class="separator:a7007e98437ff221a2a01baaa0e0cc683"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a26c95d33dd65e83e62c20e5e63eef58c" id="r_a26c95d33dd65e83e62c20e5e63eef58c"><td class="memItemLeft" align="right" valign="top"><a id="a26c95d33dd65e83e62c20e5e63eef58c" name="a26c95d33dd65e83e62c20e5e63eef58c"></a>
-<a class="el" href="structcats__whisker.html">cats_whisker_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>whiskers</b></td></tr>
-<tr class="separator:a26c95d33dd65e83e62c20e5e63eef58c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:adc9de2521bd1f3e7be1cfacffbb9b461" id="r_adc9de2521bd1f3e7be1cfacffbb9b461"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adc9de2521bd1f3e7be1cfacffbb9b461">cats_whiten</a> (uint8_t *data, size_t len)</td></tr>
+<tr class="memdesc:adc9de2521bd1f3e7be1cfacffbb9b461"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whiten/dewhiten the supplied data as per the CATS standard.  <br /></td></tr>
+<tr class="separator:adc9de2521bd1f3e7be1cfacffbb9b461"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>CATS packet structure. </p>
-<dl class="section note"><dt>Note</dt><dd>Must be initialized and deinitialized using <code>cats_packet_prepare</code> and <code>cats_packet_destroy</code> </dd></dl>
-</div><hr/>The documentation for this struct was generated from the following file:<ul>
-<li>include/cats/<a class="el" href="packet_8h_source.html">packet.h</a></li>
-</ul>
+<div class="textblock"><p>Data whitener. </p>
+</div><h2 class="groupheader">Function Documentation</h2>
+<a id="adc9de2521bd1f3e7be1cfacffbb9b461" name="adc9de2521bd1f3e7be1cfacffbb9b461"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc9de2521bd1f3e7be1cfacffbb9b461">&#9670;&#160;</a></span>cats_whiten()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void cats_whiten </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t *</td>          <td class="paramname"><span class="paramname"><em>data</em>, </span></td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>len</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Whiten/dewhiten the supplied data as per the CATS standard. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">data</td><td>Input and output buffer </td></tr>
+    <tr><td class="paramname">len</td><td>Data length </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
