@@ -1,3 +1,8 @@
+/** @file error.h
+ * 
+ * @brief Error handling
+*/
+
 #ifndef CATS_ERROR_H
 #define CATS_ERROR_H
 

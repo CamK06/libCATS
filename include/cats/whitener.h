@@ -1,3 +1,8 @@
+/** @file whitener.h
+ * 
+ * @brief Data whitener
+*/
+
 #ifndef CATS_WHITENER_H
 #define CATS_WHITENER_H
 

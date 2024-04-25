@@ -1,3 +1,8 @@
+/** @file ldpc.h
+ * 
+ * @brief LDPC encoding and decoding
+*/
+
 #ifndef CATS_LDPC_H
 #define CATS_LDPC_H
 

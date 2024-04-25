@@ -1,3 +1,8 @@
+/** @file whisker.h
+ * 
+ * @brief Whisker handling
+*/
+
 #ifndef CATS_WHISKER_H
 #define CATS_WHISKER_H
 

@@ -1,3 +1,8 @@
+/** @file interleaver.h
+ * 
+ * @brief Data interleaver
+*/
+
 #ifndef CATS_INTERLEAVER_H
 #define CATS_INTERLEAVER_H
 

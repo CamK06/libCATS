@@ -1,3 +1,8 @@
+/** @file radio_iface.h
+ * 
+ * @brief Encoder and decoder for sending/receiving data to/from a CATS radio
+*/
+
 #ifdef BUILD_RADIO_IFACE
 #ifndef CATS_RADIO_IFACE_H
 #define CATS_RADIO_IFACE_H

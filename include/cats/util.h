@@ -1,3 +1,8 @@
+/** @file util.h
+ * 
+ * @brief Utility functions for CATS, mostly unit/type conversions
+*/
+
 #ifndef CATS_UTIL_H
 #define CATS_UTIL_H
 
