@@ -34,6 +34,15 @@ var searchData=
   ['cats_5fpacket_5fsemi_5fdecode_31',['cats_packet_semi_decode',['../packet_8h.html#ae197067243797ddf208aa25fc8113858',1,'packet.c']]],
   ['cats_5fpacket_5fsemi_5fencode_32',['cats_packet_semi_encode',['../packet_8h.html#af3380439360bbd865eec1e5429ebddc2',1,'packet.c']]],
   ['cats_5fpacket_5fshould_5fdigipeat_33',['cats_packet_should_digipeat',['../packet_8h.html#a826ada26fdab022f1b859c1f2107230f',1,'packet.c']]],
-  ['cats_5fthrow_5ferr_34',['cats_throw_err',['../error_8h.html#ab488a3e98961bb2aa668c5b5351ed641',1,'error.c']]],
-  ['cats_5fwhiten_35',['cats_whiten',['../whitener_8h.html#adc9de2521bd1f3e7be1cfacffbb9b461',1,'whitener.c']]]
+  ['cats_5froute_5fadd_5ffuture_5fhop_34',['cats_route_add_future_hop',['../whisker_8h.html#a3df18154bb38426ea8486c2fc82574ae',1,'route.c']]],
+  ['cats_5froute_5fadd_5finet_5fhop_35',['cats_route_add_inet_hop',['../whisker_8h.html#abd03b8a1c042a3e77be8402e7f830048',1,'route.c']]],
+  ['cats_5froute_5fadd_5fpast_5fhop_36',['cats_route_add_past_hop',['../whisker_8h.html#aa7602d216802f64798b375e1c94505c7',1,'route.c']]],
+  ['cats_5froute_5fdestroy_37',['cats_route_destroy',['../whisker_8h.html#ad66efa438a0b95bd6a73ed87b58fc55e',1,'route.c']]],
+  ['cats_5froute_5fnew_38',['cats_route_new',['../whisker_8h.html#a1a87c46b2fe431b0a7cc02b190157bfc',1,'route.c']]],
+  ['cats_5fthrow_5ferr_39',['cats_throw_err',['../error_8h.html#ab488a3e98961bb2aa668c5b5351ed641',1,'error.c']]],
+  ['cats_5fwhisker_5fbase_5flen_40',['cats_whisker_base_len',['../whisker_8h.html#aed94d5f1e092f26dc7de50804ca22e6f',1,'whisker.c']]],
+  ['cats_5fwhisker_5fdecode_41',['cats_whisker_decode',['../whisker_8h.html#aa844dcf6459aa40152d9e64d9d19f32c',1,'whisker.c']]],
+  ['cats_5fwhisker_5fencode_42',['cats_whisker_encode',['../whisker_8h.html#af232e82734b28309bd6f631efb9e3ab4',1,'whisker.c']]],
+  ['cats_5fwhisker_5fnew_43',['cats_whisker_new',['../whisker_8h.html#a58f54490552eb75efd8a72434c4aed30',1,'whisker.c']]],
+  ['cats_5fwhiten_44',['cats_whiten',['../whitener_8h.html#adc9de2521bd1f3e7be1cfacffbb9b461',1,'whitener.c']]]
 ];
