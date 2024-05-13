@@ -11,6 +11,7 @@
 #include <assert.h>
 #include <string.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 static const uint8_t CBOR_BEGIN[3] = { 0xd9, 0xd9, 0xf7 };
 
@@ -33,7 +34,7 @@ uint16_t cats_radio_iface_encode(uint8_t* buf, const size_t buf_len, const float
 int cats_radio_iface_decode(uint8_t* buf, const size_t buf_len, float* rssi_out)
 {
     assert(buf != NULL);
-    if(buf_len <= 0 || memcmp(buf, CBOR_BEGIN, 3) != 0) {
+    if(!cats_radio_iface_has_header(buf, buf_len)) {
         throw(DECODE_FAIL);
     }
 
@@ -60,6 +61,11 @@ int cats_radio_iface_decode(uint8_t* buf, const size_t buf_len, float* rssi_out)
     size_t len = items[0].size;
     memcpy(buf, tmp, len);
     return len;
+}
+
+bool cats_radio_iface_has_header(const uint8_t* buf, const size_t buf_len)
+{
+    return buf_len > 0 && memcmp(buf, CBOR_BEGIN, 3) == 0;
 }
 
 #endif // BUILD_RADIO_IFACE

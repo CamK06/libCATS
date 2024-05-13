@@ -9,6 +9,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <stdbool.h>
 
 /**
  * @brief Encode a packet with CBOR for transmission between a CATS radio and computer
@@ -29,6 +30,15 @@ uint16_t cats_radio_iface_encode(uint8_t* buf, const size_t buf_len, const float
  * @return Decoded length or CATS_FAIL on failure
  */
 int cats_radio_iface_decode(uint8_t* buf, const size_t buf_len, float* rssi_out);
+
+/**
+ * @brief Check if a buffer has a CBOR header
+ * 
+ * @param buf Input buffer
+ * @param buf_len Length of input buffer
+ * @return True if header is present, false otherwise
+ */
+bool cats_radio_iface_has_header(const uint8_t* buf, const size_t buf_len);
 
 #endif // CATS_RADIO_IFACE_H
 #endif // BUILD_RADIO_IFACE
