@@ -175,7 +175,8 @@ typedef struct cats_whisker {
 	struct cats_whisker* next;
 } cats_whisker_t;
 
-/* @brief Encode a whisker into a byte array
+/** 
+ * @brief Encode a whisker into a byte array
  * 
  * @param whisker The whisker to encode
  * @param out The byte array to write to
@@ -183,7 +184,8 @@ typedef struct cats_whisker {
 */
 size_t cats_whisker_encode(const cats_whisker_t* whisker, uint8_t* out);
 
-/* @brief Decode a whisker from a byte array
+/**
+ * @brief Decode a whisker from a byte array
  * 
  * @param data The byte array to decode
  * @param out The whisker to write to
@@ -191,20 +193,23 @@ size_t cats_whisker_encode(const cats_whisker_t* whisker, uint8_t* out);
 */
 int cats_whisker_decode(const uint8_t* data, cats_whisker_t* out);
 
-/* @brief Get the length of a whisker base type
+/**
+ * @brief Get the length of a whisker base type
  * 
  * @param type The whisker type
  * @return The length of the whisker base type
 */
 int cats_whisker_base_len(const cats_whisker_type_t type);
 
-/* @brief Create a new whisker
+/** 
+ * @brief Create a new whisker
  * 
  * @return A pointer to the new whisker
 */
 cats_whisker_t* cats_whisker_new();
 
-/* @brief Add a future hop to a route whisker
+/** 
+ * @brief Add a future hop to a route whisker
  * 
  * @param route The route whisker to add to
  * @param callsign The callsign of the hop
@@ -213,7 +218,8 @@ cats_whisker_t* cats_whisker_new();
 */
 cats_route_hop_t* cats_route_add_future_hop(cats_route_whisker_t* route, const char* callsign, uint8_t ssid);
 
-/* @brief Add a past hop to a route whisker
+/** 
+ * @brief Add a past hop to a route whisker
  * 
  * @param route The route whisker to add to
  * @param callsign The callsign of the hop
@@ -223,21 +229,24 @@ cats_route_hop_t* cats_route_add_future_hop(cats_route_whisker_t* route, const c
 */
 cats_route_hop_t* cats_route_add_past_hop(cats_route_whisker_t* route, const char* callsign, uint8_t ssid, float rssi);
 
-/* @brief Add an internet hop to a route whisker
+/** 
+ * @brief Add an internet hop to a route whisker
  * 
  * @param route The route whisker to add to
  * @return A pointer to the new hop
 */
 cats_route_hop_t* cats_route_add_inet_hop(cats_route_whisker_t* route);
 
-/* @brief Destroy a route whisker
+/** 
+ * @brief Destroy a route whisker
  * 
  * @param route The route whisker to destroy
  * @note This function must be used rather than free()
 */
 void cats_route_destroy(cats_route_whisker_t* route);
 
-/* @brief Create a new route whisker
+/** 
+ * @brief Create a new route whisker
  * 
  * @param max_digipeats The maximum number of digipeats
  * @return The new route whisker
