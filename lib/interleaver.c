@@ -8,18 +8,21 @@
 void cats_interleave(uint8_t* data, size_t len)
 {
 	uint8_t buf[len];
-	int bitIndex = 0;
+	int bit_index = 0;
 	for(int i = 0; i < 32; i++) {
-		for(int j = 0; j < len*8; j += 32) {
-			if(i+j >= len*8)
+		for(int j = 0; j < len * 8; j += 32) {
+			if(i+j >= len * 8) {
 				continue;
+			}
 			
-			if(GET_BIT(data[(i+j)/8], (i+j)%8))
-				SET_BIT(buf[bitIndex/8], bitIndex%8);
-			else
-				CLEAR_BIT(buf[bitIndex/8], bitIndex%8);
+			if(GET_BIT(data[(i+j) / 8], (i+j) % 8)) {
+				SET_BIT(buf[bit_index / 8], bit_index % 8);
+			}
+			else {
+				CLEAR_BIT(buf[bit_index / 8], bit_index % 8);
+			}
 
-			bitIndex++;	
+			bit_index++;	
 		}	
 	}
 	memcpy(data, buf, len);
@@ -28,18 +31,21 @@ void cats_interleave(uint8_t* data, size_t len)
 void cats_deinterleave(uint8_t* data, size_t len)
 {
 	uint8_t buf[len];
-	int bitIndex = 0;
+	int bit_index = 0;
 	for(int i = 0; i < 32; i++) {
-		for(int j = 0; j < len*8; j+= 32) {
-			if(i+j >= len*8)
+		for(int j = 0; j < len * 8; j+= 32) {
+			if(i+j >= len * 8) {
 				continue;
+			}
 
-			if(GET_BIT(data[bitIndex/8], bitIndex%8))
-				SET_BIT(buf[(i+j)/8], (i+j)%8);
-			else
-				CLEAR_BIT(buf[(i+j)/8], (i+j)%8);
+			if(GET_BIT(data[bit_index / 8], bit_index % 8)) {
+				SET_BIT(buf[(i+j) / 8], (i+j) % 8);
+			}
+			else {
+				CLEAR_BIT(buf[(i+j) / 8], (i+j) % 8);
+			}
 
-			bitIndex++;	
+			bit_index++;	
 		}
 	}
 	memcpy(data, buf, len);
