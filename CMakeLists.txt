@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.19)
 project(libCATS)
 
 option(OPT_BUILD_TESTS OFF)
-option(OPT_BUILD_RADIO_IFACE OFF)
+option(OPT_BUILD_RADIO_IFACE ON)
 
 file(GLOB SOURCES lib/buffer.c
                 lib/error.c
