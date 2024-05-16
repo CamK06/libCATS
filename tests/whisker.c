@@ -280,6 +280,11 @@ void test_nodeinfo()
     info.tx_power.enabled = true;
     info.uptime.enabled = true;
     info.voltage.enabled = true;
+    info.altitude.enabled = true;
+    info.is_balloon.enabled = true;
+    info.ambient_humidity.enabled = false;
+    info.ambient_temp.enabled = false;
+    info.ambient_pressure.enabled = false;
     info.hardware_id.val = 7408;
     info.uptime.val = 98;
     info.tx_power.val = 30;
@@ -310,6 +315,11 @@ void test_nodeinfo()
     assert(info.tx_power.enabled == true);
     assert(info.uptime.enabled == true);
     assert(info.voltage.enabled == true);
+    assert(info.altitude.enabled == true);
+    assert(info.is_balloon.enabled == true);
+    assert(info.ambient_humidity.enabled == false);
+    assert(info.ambient_temp.enabled == false);
+    assert(info.ambient_pressure.enabled == false);
     assert(info.hardware_id.val == 7408);
     assert(info.tx_power.val == 30);
     assert(info.voltage.val = 12.8);

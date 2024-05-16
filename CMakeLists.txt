@@ -3,6 +3,7 @@ project(libCATS)
 
 option(OPT_BUILD_TESTS OFF)
 option(OPT_BUILD_RADIO_IFACE ON)
+option(OPT_BUILD_FELINET ON)
 
 file(GLOB SOURCES lib/buffer.c
                 lib/error.c
@@ -60,6 +61,10 @@ if(OPT_BUILD_TESTS)
         add_subdirectory(tests)
     endif()
 endif(OPT_BUILD_TESTS)
+
+if(OPT_BUILD_FELINET)
+    
+endif(OPT_BUILD_FELINET)
 
 target_link_libraries(CATS labrador_ldpc)
 target_include_directories(CATS PUBLIC include ${labrador_ldpc_SOURCE_DIR}/capi/include)

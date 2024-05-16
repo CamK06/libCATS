@@ -23,6 +23,11 @@
 #define CATS_NODEINFO_VOLTAGE 64
 #define CATS_NODEINFO_TEMP 128
 #define CATS_NODEINFO_BATTERY 256
+#define CATS_NODEINFO_ALTITUDE 512
+#define CATS_NODEINFO_IS_BALLOON 1024
+#define CATS_NODEINFO_AMBIENT_TEMP 2048
+#define CATS_NODEINFO_AMBIENT_HUMIDITY 4096
+#define CATS_NODEINFO_AMBIENT_PRESSURE 8192
 
 #define CATS_MAX_WHISKER_LEN 255
 #define CATS_MAX_WHISKERS 255
@@ -92,6 +97,15 @@ struct nodeinfo_i32 {
 	int32_t val;
 };
 
+struct nodeinfo_f32 {
+	bool enabled;
+	float val;
+};
+
+struct nodeinfo_bool {
+	bool enabled;
+};
+
 typedef struct cats_ident_whisker {
 	uint16_t icon;
 	uint8_t callsign[252]; // 252 = 255 - icon - ssid
@@ -155,6 +169,11 @@ typedef struct cats_nodeinfo_whisker {
 	struct nodeinfo_voltage voltage;
 	struct nodeinfo_i8 temperature;
 	struct nodeinfo_u8 battery_level;
+	struct nodeinfo_f32 altitude;
+	struct nodeinfo_bool is_balloon;
+	struct nodeinfo_i8 ambient_temp;
+	struct nodeinfo_u8 ambient_humidity;
+	struct nodeinfo_u16 ambient_pressure;
 } cats_nodeinfo_whisker_t;
 
 typedef union cats_whisker_data {
