@@ -10,7 +10,7 @@
 
 static cats_route_hop_t* cats_route_append_new_hop(cats_route_whisker_t* route);
 static cats_route_hop_t* cats_route_new_hop();
-static cats_route_hop_t* cats_route_add_hop(cats_route_whisker_t* route, const char* callsign, uint8_t ssid, int16_t rssi, uint8_t type);
+static cats_route_hop_t* cats_route_add_hop(cats_route_whisker_t* route, const char* callsign, uint8_t ssid, float rssi, uint8_t type);
 
 size_t cats_route_encode(const cats_whisker_data_t* data, uint8_t* dest)
 {
@@ -108,7 +108,7 @@ static cats_route_hop_t* cats_route_new_hop()
     return hop;
 }
 
-static cats_route_hop_t* cats_route_add_hop(cats_route_whisker_t* route, const char* callsign, uint8_t ssid, int16_t rssi, uint8_t type)
+static cats_route_hop_t* cats_route_add_hop(cats_route_whisker_t* route, const char* callsign, uint8_t ssid, float rssi, uint8_t type)
 {
     assert(route != NULL);
     if(type != CATS_ROUTE_INET) {
@@ -137,7 +137,7 @@ cats_route_hop_t* cats_route_add_future_hop(cats_route_whisker_t* route, const c
     return cats_route_add_hop(route, callsign, ssid, 0, CATS_ROUTE_FUTURE);
 }
 
-cats_route_hop_t* cats_route_add_past_hop(cats_route_whisker_t* route, const char* callsign, uint8_t ssid, uint16_t rssi)
+cats_route_hop_t* cats_route_add_past_hop(cats_route_whisker_t* route, const char* callsign, uint8_t ssid, float rssi)
 {
     return cats_route_add_hop(route, callsign, ssid, rssi, CATS_ROUTE_PAST);
 }

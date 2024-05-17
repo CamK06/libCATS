@@ -15,6 +15,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+      with:
+        submodules: true
 
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
@@ -29,7 +31,8 @@ jobs:
       run: >
         cmake -B ${{ steps.strings.outputs.build-output-dir }}
         -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-        -DBUILD_TESTS=ON
+        -DOPT_BUILD_TESTS=ON
+        -DOPT_BUILD_RADIO_IFACE=ON
         -S ${{ github.workspace }}
 
     - name: Build

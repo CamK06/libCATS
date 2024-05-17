@@ -1,3 +1,8 @@
+/** @file whisker.h
+ * 
+ * @brief Whisker handling
+*/
+
 #ifndef CATS_WHISKER_H
 #define CATS_WHISKER_H
 
@@ -18,6 +23,11 @@
 #define CATS_NODEINFO_VOLTAGE 64
 #define CATS_NODEINFO_TEMP 128
 #define CATS_NODEINFO_BATTERY 256
+#define CATS_NODEINFO_ALTITUDE 512
+#define CATS_NODEINFO_IS_BALLOON 1024
+#define CATS_NODEINFO_AMBIENT_TEMP 2048
+#define CATS_NODEINFO_AMBIENT_HUMIDITY 4096
+#define CATS_NODEINFO_AMBIENT_PRESSURE 8192
 
 #define CATS_MAX_WHISKER_LEN 255
 #define CATS_MAX_WHISKERS 255
@@ -87,6 +97,15 @@ struct nodeinfo_i32 {
 	int32_t val;
 };
 
+struct nodeinfo_f32 {
+	bool enabled;
+	float val;
+};
+
+struct nodeinfo_bool {
+	bool enabled;
+};
+
 typedef struct cats_ident_whisker {
 	uint16_t icon;
 	char callsign[252]; // 252 = 255 - icon - ssid
@@ -105,7 +124,7 @@ typedef struct cats_gps_whisker {
 typedef struct cats_route_hop {
 	uint8_t hop_type;
 	uint8_t ssid;
-	int16_t rssi;
+	float rssi;
 	uint8_t callsign[16];
 	struct cats_route_hop* next;
 } cats_route_hop_t;
@@ -150,6 +169,11 @@ typedef struct cats_nodeinfo_whisker {
 	struct nodeinfo_voltage voltage;
 	struct nodeinfo_i8 temperature;
 	struct nodeinfo_u8 battery_level;
+	struct nodeinfo_f32 altitude;
+	struct nodeinfo_bool is_balloon;
+	struct nodeinfo_i8 ambient_temp;
+	struct nodeinfo_u8 ambient_humidity;
+	struct nodeinfo_u16 ambient_pressure;
 } cats_nodeinfo_whisker_t;
 
 typedef union cats_whisker_data {
@@ -170,16 +194,82 @@ typedef struct cats_whisker {
 	struct cats_whisker* next;
 } cats_whisker_t;
 
-// Returns number of bytes written to out
+/** 
+ * @brief Encode a whisker into a byte array
+ * 
+ * @param whisker The whisker to encode
+ * @param out The byte array to write to
+ * @return The number of bytes written to out
+*/
 size_t cats_whisker_encode(const cats_whisker_t* whisker, uint8_t* out);
+
+/**
+ * @brief Decode a whisker from a byte array
+ * 
+ * @param data The byte array to decode
+ * @param out The whisker to write to
+ * @return CATS_SUCCESS on success, CATS_FAIL on failure
+*/
 int cats_whisker_decode(const uint8_t* data, cats_whisker_t* out);
+
+/**
+ * @brief Get the length of a whisker base type
+ * 
+ * @param type The whisker type
+ * @return The length of the whisker base type
+*/
 int cats_whisker_base_len(const cats_whisker_type_t type);
+
+/** 
+ * @brief Create a new whisker
+ * 
+ * @return A pointer to the new whisker
+*/
 cats_whisker_t* cats_whisker_new();
 
+/** 
+ * @brief Add a future hop to a route whisker
+ * 
+ * @param route The route whisker to add to
+ * @param callsign The callsign of the hop
+ * @param ssid The SSID of the hop
+ * @return A pointer to the new hop
+*/
 cats_route_hop_t* cats_route_add_future_hop(cats_route_whisker_t* route, const char* callsign, uint8_t ssid);
-cats_route_hop_t* cats_route_add_past_hop(cats_route_whisker_t* route, const char* callsign, uint8_t ssid, uint16_t rssi);
+
+/** 
+ * @brief Add a past hop to a route whisker
+ * 
+ * @param route The route whisker to add to
+ * @param callsign The callsign of the hop
+ * @param ssid The SSID of the hop
+ * @param rssi The RSSI of the hop
+ * @return A pointer to the new hop
+*/
+cats_route_hop_t* cats_route_add_past_hop(cats_route_whisker_t* route, const char* callsign, uint8_t ssid, float rssi);
+
+/** 
+ * @brief Add an internet hop to a route whisker
+ * 
+ * @param route The route whisker to add to
+ * @return A pointer to the new hop
+*/
 cats_route_hop_t* cats_route_add_inet_hop(cats_route_whisker_t* route);
+
+/** 
+ * @brief Destroy a route whisker
+ * 
+ * @param route The route whisker to destroy
+ * @note This function must be used rather than free()
+*/
 void cats_route_destroy(cats_route_whisker_t* route);
+
+/** 
+ * @brief Create a new route whisker
+ * 
+ * @param max_digipeats The maximum number of digipeats
+ * @return The new route whisker
+*/
 cats_route_whisker_t cats_route_new(uint8_t max_digipeats);
 
 #endif // CATS_WHISKER_H

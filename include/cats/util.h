@@ -1,3 +1,8 @@
+/** @file util.h
+ * 
+ * @brief Utility functions for CATS, mostly unit/type conversions
+*/
+
 #ifndef CATS_UTIL_H
 #define CATS_UTIL_H
 
@@ -21,7 +26,7 @@ int16_t lon_to_int16(double lon);
 double int16_to_lat(int16_t lat);
 double int16_to_lon(int16_t lon);
 
-uint8_t cats_rssi_encode(int16_t rssi);
-int16_t cats_rssi_decode(uint8_t rssi);
+uint8_t cats_rssi_encode(float rssi);
+float cats_rssi_decode(uint8_t rssi);
 
 #endif // CATS_UTIL_H

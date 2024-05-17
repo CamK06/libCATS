@@ -57,6 +57,27 @@ size_t cats_nodeinfo_encode(const cats_whisker_data_t* data, uint8_t* dest)
 		dest[ptr++] = info->battery_level.val * 2.55;
 		bitmap |= CATS_NODEINFO_BATTERY;
 	}
+	if(info->altitude.enabled) {
+		memcpy(dest + ptr, &(info->altitude.val), 4); // TODO: Do this another way
+		ptr += 4;
+		bitmap |= CATS_NODEINFO_ALTITUDE;
+	}
+	if(info->is_balloon.enabled) {
+		bitmap |= CATS_NODEINFO_IS_BALLOON;
+	}
+	if(info->ambient_temp.enabled) {
+		dest[ptr++] = info->ambient_temp.val;
+		bitmap |= CATS_NODEINFO_AMBIENT_TEMP;
+	}
+	if(info->ambient_humidity.enabled) {
+		dest[ptr++] = info->ambient_humidity.val * 2.55;
+		bitmap |= CATS_NODEINFO_AMBIENT_HUMIDITY;
+	}
+	if(info->ambient_pressure.enabled) {
+		dest[ptr++] = info->ambient_pressure.val;
+		dest[ptr++] = info->ambient_pressure.val >> 8;
+		bitmap |= CATS_NODEINFO_AMBIENT_PRESSURE;
+	}
 
 	dest[4] = bitmap;
 	dest[3] = bitmap >> 8;
@@ -109,6 +130,26 @@ void cats_nodeinfo_decode(const uint8_t* data, size_t len, cats_whisker_data_t* 
 	if(CHECK_MASK(bitmap, CATS_NODEINFO_BATTERY)) {
 		info->battery_level.val = data[ptr++] / 2.55;
 		info->battery_level.enabled = true;
+	}
+	if(CHECK_MASK(bitmap, CATS_NODEINFO_ALTITUDE)) {
+		memcpy(&(info->altitude.val), data + ptr, 4); // TODO: Do this another way
+		ptr += 4;
+		info->altitude.enabled = true;
+	}
+	if(CHECK_MASK(bitmap, CATS_NODEINFO_IS_BALLOON)) {
+		info->is_balloon.enabled = true;
+	}
+	if(CHECK_MASK(bitmap, CATS_NODEINFO_AMBIENT_TEMP)) {
+		info->ambient_temp.val = data[ptr++];
+		info->ambient_temp.enabled = true;
+	}
+	if(CHECK_MASK(bitmap, CATS_NODEINFO_AMBIENT_HUMIDITY)) {
+		info->ambient_humidity.val = data[ptr++] / 2.55;
+		info->ambient_humidity.enabled = true;
+	}
+	if(CHECK_MASK(bitmap, CATS_NODEINFO_AMBIENT_PRESSURE)) {
+		info->ambient_pressure.val = (data[ptr + 1] << 8) | data[ptr];
+		info->ambient_pressure.enabled = true;
 	}
 }
 
